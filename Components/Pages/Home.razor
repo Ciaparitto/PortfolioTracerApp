@@ -1,0 +1,29 @@
+﻿@page "/"
+@using PortfolioApp.Components.Services.Interfaces
+@inject IApiService ApiService;
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+<button @onclick="GetMetalPrice">pobierz dane metalu</button>
+<p>@resultMetal</p>
+<button @onclick="GetCurrencyPrice">pobierz dane waluty</button>
+<p>@resultCurrency</p>
+<h2>testnapisany</h2>
+Welcome to your new app.
+@code{
+	public string resultMetal;
+	public string resultCurrency;
+	protected override async Task OnInitializedAsync()
+	{
+		resultCurrency = await ApiService.GetCurrencyPrice("USD", "EUR,PLN,CAD", "2023", "12", "10");
+	}
+	public async Task GetMetalPrice()
+	{
+		resultMetal = await ApiService.GetMetalPrice("XAU", "USD", "2023", "12", "10");
+	}
+	public async Task GetCurrencyPrice()
+	{
+		resultCurrency = await ApiService.GetCurrencyPrice("USD", "EUR,PLN,CAD", "2023", "12", "10");
+		
+	}
+}
