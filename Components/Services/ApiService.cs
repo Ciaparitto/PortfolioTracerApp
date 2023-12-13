@@ -22,14 +22,14 @@ namespace PortfolioApp.Components.Services
 			httpClient.Timeout = TimeSpan.FromSeconds(30);
 		}
 
-		public async Task<string> GetMetalPrice(string symbol,string curr,string year,string month,string day)
+		public async Task<MetalModel> GetMetalPrice(string symbol,string curr,string year,string month,string day)
 		{
 		
-				string apiKey = "goldapi-k2derlpzpnqxf-io";
+				string apiKey = "goldapi-5b18drlq3tux1b-io";
 				string date = year + month + day;
 
 				
-				httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);				
+				httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
 				string url = $"https://www.goldapi.io/api/{symbol}/{curr}/{date}";
 				try
 
@@ -39,17 +39,44 @@ namespace PortfolioApp.Components.Services
 					//response.EnsureSuccessStatusCode();
 					string result = await response.Content.ReadAsStringAsync();
 					var Metal = JsonConvert.DeserializeObject<MetalModel>(result);
-					var result2 = $"cena za {Metal.metal} to {Math.Round(Metal.price)} {curr} w dniu {year}.{month}.{day}";
-					return result2.ToString();
-
+					var Result = Math.Round(Metal.price ,2);
+					return Metal;
+	
 				}
 				catch (Exception err)
 				{
 					Console.WriteLine($"blad {err.Message}");
-					return $"blad {err.Message}";
+					return null;
 				}		
 		}
-		public async Task<string> GetCurrencyPrice(string basecurrency,string currencyList,string year, string month, string day)
+		public async Task<MetalModel> GetMetalPrice(string symbol, string curr)
+		{
+
+			string apiKey = "goldapi-5b18drlq3tux1b-io";
+			
+
+
+			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
+			string url = $"https://www.goldapi.io/api/{symbol}/{curr}";
+			try
+
+			{
+				var response = httpClient.GetAsync(url).Result;
+
+				//response.EnsureSuccessStatusCode();
+				string result = await response.Content.ReadAsStringAsync();
+				var Metal = JsonConvert.DeserializeObject<MetalModel>(result);
+				var Result = Math.Round(Metal.price, 2);
+				return Metal;
+
+			}
+			catch (Exception err)
+			{
+				Console.WriteLine($"blad {err.Message}");
+				return null;
+			}
+		}
+		public async Task<CurrencyModel> GetCurrencyPrice(string basecurrency,string currencyList,string year, string month, string day)
 		{
 			string ApiKey = "4b6fd8ef52c20240e71494066ee0354d";
 			string url = $"http://api.exchangeratesapi.io/v1/{year}-{month}-{day}?access_key={ApiKey}&{basecurrency}&{currencyList}";
@@ -58,13 +85,12 @@ namespace PortfolioApp.Components.Services
 				var response = httpClient.GetAsync(url).Result;
 				string result = await response.Content.ReadAsStringAsync();
 				var Currency = JsonConvert.DeserializeObject<CurrencyModel>(result);
-				return Currency.Base;
-				Console.WriteLine("wait");
+				return Currency;
 			}
 			catch (Exception err)
 			{
 				Console.WriteLine(err.Message);
-				return err.Message;
+				return null;
 			}
 			
 		}
