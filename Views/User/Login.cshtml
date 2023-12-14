@@ -1,0 +1,10 @@
+﻿@model PortfolioApp.Models.LoginModel;
+@using (Html.BeginForm("Login", "User", FormMethod.Post))
+{
+	@Html.ValidationSummary()
+	<div class="logincontainer">
+		<p class="textarealogin">podaj nazwe uzytkownika: <br />@Html.TextBoxFor(x => x.UserName)</p>
+		<p class="textarealogin">podaj haslo: <br />@Html.PasswordFor(x => x.Password)</p>
+		<p><button class="button" type="submit">Zarejestruj</button></p>
+	</div>
+}

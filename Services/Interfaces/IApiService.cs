@@ -1,6 +1,6 @@
 ﻿using PortfolioApp.Models;
 
-namespace PortfolioApp.Components.Services.Interfaces
+namespace PortfolioApp.Services.Interfaces
 {
     public interface IApiService
     {
@@ -9,6 +9,6 @@ namespace PortfolioApp.Components.Services.Interfaces
         public Task<MetalModel> GetMetalPrice(string symbol, string curr);
 
 		public Task<CurrencyModel> GetCurrencyPrice(string basecurrency, string currencyList, string year, string month, string day);
-
+        
 	}
 }

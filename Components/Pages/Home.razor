@@ -1,10 +1,16 @@
 ﻿@page "/"
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
+@using PortfolioApp.Services.Interfaces
 @inject IApiService ApiService;
+@inject IUserService UserService;
+@inject HttpClient httpclinet;
 <PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
+@if (LoggedUser != null)
+{
+	<h1>Hello @LoggedUser.UserName</h1>
+}
+<p>test @test</p>
 <button @onclick="@(() =>  GetMetalPriceDay(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day))">pobierz dane metalu</button>
 <p>@MetalPrice</p>
 <button @onclick="GetCurrencyPrice">pobierz dane waluty</button>
@@ -14,10 +20,13 @@
 	public double MetalPrice;
 	public double AmonutOfEUR = 20;
 	public double AmmountOfPLN = 30;
+	public double test;
 	public string CurrencyWorth;
+	public UserModel LoggedUser;
 	protected override async Task OnInitializedAsync()
 	{
-		GetCurrencyPrice();
+		LoggedUser = await UserService.GetLoggedUser();
+		test = await UserService.GetAmmountOfAsset("XAU", "Metal");
 	}
 	public async Task<double> GetMetalPriceDay(int year, int month, int day)
 	{
@@ -49,7 +58,6 @@
 		var WorthEURY = AmonutOfEUR * Convert.ToDouble(resultCurrencyYesterDay.Rates["EUR"]);
 
 
-		CurrencyWorth = $"Wartosc Twoich EURO to {Math.Round(WorthEUR,2)} USD to o {Math.Round(WorthEUR - WorthEURY, 2)} USD wiecej niz wczoraj \n Wartosc Twoich PLN to {Math.Round(WorthPLN, 2)} USD to o {Math.Round(WorthPLN - WorthPLNY, 2)} USD wiecej niz wczoraj";
-
+		CurrencyWorth = $"Wartosc Twoich EURO to {Math.Round(WorthEUR,2)} USD to o {Math.Round(WorthEUR - WorthEURY, 2)} USD wiecej niz wczoraj \n				Wartosc	Twoich PLN to {Math.Round(WorthPLN, 2)} USD to o {Math.Round(WorthPLN - WorthPLNY, 2)} USD wiecej niz wczoraj";
 	}
 }

@@ -6,15 +6,18 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Newtonsoft.Json;
 using PortfolioApp.Models;
+using Microsoft.AspNetCore.Identity;
+using PortfolioApp.Services.Interfaces;
 
 
-namespace PortfolioApp.Components.Services
+namespace PortfolioApp.Services
 {
 	public class ApiService : IApiService
 	{
 		//private const string COIN_API_KEY = "a8fb9c88-0fe5-4514-80fd-c0292064d32a";
 		private const string COIN_API_KEY = "goldapi-k2derlpzpnqxf-io";
 		private readonly HttpClient httpClient;
+		
 
 		public ApiService(HttpClient httpClient)
 		{
