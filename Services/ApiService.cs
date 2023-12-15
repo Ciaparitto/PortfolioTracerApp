@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using PortfolioApp.Models;
 using Microsoft.AspNetCore.Identity;
 using PortfolioApp.Services.Interfaces;
+using Humanizer;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace PortfolioApp.Services
@@ -25,26 +27,24 @@ namespace PortfolioApp.Services
 			httpClient.Timeout = TimeSpan.FromSeconds(30);
 		}
 
-		public async Task<MetalModel> GetMetalPrice(string symbol,string curr,string year,string month,string day)
+		public async Task<CurrencyModel> GetMetalPrice(string symbol,string curr,string year,string month,string day)
 		{
 		
-				string apiKey = "goldapi-5b18drlq3tux1b-io";
+				string apiKey = "bce54fad4f67965a35c9754582779520";
 				string date = year + month + day;
 
 				
 				httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
-				string url = $"https://www.goldapi.io/api/{symbol}/{curr}/{date}";
+			string url = $"https://api.metalpriceapi.com/v1/{year}-{month}-{day}?api_key={apiKey}&base=USD";
 				try
 
-				{					
-					var response = httpClient.GetAsync(url).Result;
+				{
+				var response = httpClient.GetAsync(url).Result;
 					
 					//response.EnsureSuccessStatusCode();
 					string result = await response.Content.ReadAsStringAsync();
-					var Metal = JsonConvert.DeserializeObject<MetalModel>(result);
-					var Result = Math.Round(Metal.price ,2);
+					var Metal = JsonConvert.DeserializeObject<CurrencyModel>(result);
 					return Metal;
-	
 				}
 				catch (Exception err)
 				{
@@ -52,24 +52,19 @@ namespace PortfolioApp.Services
 					return null;
 				}		
 		}
-		public async Task<MetalModel> GetMetalPrice(string symbol, string curr)
+		public async Task<CurrencyModel> GetMetalPrice(string symbol, string curr)
 		{
 
-			string apiKey = "goldapi-5b18drlq3tux1b-io";
-			
-
-
+			string apiKey = "bce54fad4f67965a35c9754582779520";
 			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
-			string url = $"https://www.goldapi.io/api/{symbol}/{curr}";
+			string url = $"https://api.metalpriceapi.com/v1/lasted?api_key={apiKey}&base=USD";
 			try
-
 			{
 				var response = httpClient.GetAsync(url).Result;
 
 				//response.EnsureSuccessStatusCode();
 				string result = await response.Content.ReadAsStringAsync();
-				var Metal = JsonConvert.DeserializeObject<MetalModel>(result);
-				var Result = Math.Round(Metal.price, 2);
+				var Metal = JsonConvert.DeserializeObject<CurrencyModel>(result);
 				return Metal;
 
 			}
@@ -97,6 +92,28 @@ namespace PortfolioApp.Services
 			}
 			
 		}
-		
+		public async Task<ConvertModel> Convert(string curr,string symbol,double ammount,string year,string month,string day)
+		{
+			string apiKey = "bce54fad4f67965a35c9754582779520";
+			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
+			var url = $"https://api.metalpriceapi.com/v1/convert?api_key={apiKey}&from={symbol}&to={curr}&amount={ammount}&date={year}-{month}-{day}";
+			
+			try
+			{
+				var response = httpClient.GetAsync(url).Result;
+
+				//response.EnsureSuccessStatusCode();
+				string result = await response.Content.ReadAsStringAsync();
+				var Metal = JsonConvert.DeserializeObject<ConvertModel>(result);
+				return Metal;			
+
+			}
+			catch (Exception err)
+			{
+				Console.WriteLine($"blad {err.Message}");
+				return null;
+				
+			}
+		}
 	}
 }

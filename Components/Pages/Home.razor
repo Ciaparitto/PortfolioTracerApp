@@ -11,7 +11,7 @@
 	<h1>Hello @LoggedUser.UserName</h1>
 }
 <p>test @test</p>
-<button @onclick="@(() =>  GetMetalPriceDay(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day))">pobierz dane metalu</button>
+
 <p>@MetalPrice</p>
 <button @onclick="GetCurrencyPrice">pobierz dane waluty</button>
 <p>@CurrencyWorth</p>
@@ -20,37 +20,53 @@
 	public double MetalPrice;
 	public double AmonutOfEUR = 20;
 	public double AmmountOfPLN = 30;
-	public double test;
+	public string test;
 	public string CurrencyWorth;
 	public UserModel LoggedUser;
 	protected override async Task OnInitializedAsync()
 	{
 		LoggedUser = await UserService.GetLoggedUser();
-		test = await UserService.GetAmmountOfAsset("XAU", "Metal");
+		test = await GetMetalPriceMonth(2023, 12, 13, "XAU");
+
+
 	}
-	public async Task<double> GetMetalPriceDay(int year, int month, int day)
-	{
-		var metalprice1 = await ApiService.GetMetalPrice("XAU", "USD");
-		var metalprice2 = await ApiService.GetMetalPrice("XAU", "USD", year.ToString(), month.ToString(), (day-1).ToString());
-		return metalprice1.price - metalprice2.price;
-	}
-	public async Task<double> GetMetalPriceMonth(int year, int month, int day)
+	public async Task<string> GetMetalPriceDay(int year, int month, int day,string symbol)
 	{
 		var metalprice1 = await ApiService.GetMetalPrice("XAU", "USD", year.ToString(), month.ToString(), day.ToString());
-		var metalprice2 = await ApiService.GetMetalPrice("XAU", "USD", year.ToString(), (month - 1).ToString(), day.ToString());
-		return metalprice1.price - metalprice2.price;
+		var metalprice2 = await ApiService.GetMetalPrice("XAU", "USD", year.ToString(), month.ToString(), (day - 1).ToString());
+		return $"zamina w kursie zlota to {metalprice1.Rates[symbol] - metalprice2.Rates[symbol]}";
 	}
-	public async Task<double> GetMetalPriceYear(int year, int month, int day)
+	public async Task<string> GetMetalPriceMonth(int year, int month, int day, string symbol)
+	{
+		var ammount = UserService.GetAmmountOfAsset("XAU", "Metal").Result;
+		var metalprice1 = await ApiService.Convert("USD", "XAU", ammount, year.ToString(), month.ToString(), day.ToString());
+		var metalprice2 = await ApiService.Convert("USD", "XAU", ammount, year.ToString(), (month - 1).ToString(), day.ToString());
+		var change = Math.Round(metalprice1.Result - metalprice2.Result,2);
+		if(change > 0)
+		{
+			return $"twoje zloto usroslo o {change} USD";
+		}
+		if (change < 0)
+		{
+			return $"twoje zloto spadlo o {change} USD";
+		}
+		if(change == 0)
+		{
+			return $"twoje zloto jest warte {change} USD";
+		}
+		return "error";
+	}
+	public async Task<double> GetMetalPriceYear(int year, int month, int day,string symbol)
 	{
 		var metalprice1 = await ApiService.GetMetalPrice("XAU", "USD", year.ToString(), month.ToString(), day.ToString());
 		var metalprice2 = await ApiService.GetMetalPrice("XAU", "USD", (year-1).ToString(), month.ToString(), day.ToString());
-		return metalprice1.price - metalprice2.price;
+		return Convert.ToDouble(metalprice1.Rates[symbol] - metalprice2.Rates[symbol]);
 	}
 	public async Task GetCurrencyPrice()
 	{
 		var resultCurrencyYesterDay = await ApiService.GetCurrencyPrice("USD", "EUR,PLN,CAD", "2023", "12", "09");
 		var resultCurrency = await ApiService.GetCurrencyPrice("USD", "EUR,PLN,CAD", "2023", "12", "10");
-		 
+
 		var WorthPLN = AmmountOfPLN * Convert.ToDouble(resultCurrency.Rates["PLN"]);
 		var WorthEUR = AmonutOfEUR * Convert.ToDouble(resultCurrency.Rates["EUR"]); 
 
@@ -59,5 +75,7 @@
 
 
 		CurrencyWorth = $"Wartosc Twoich EURO to {Math.Round(WorthEUR,2)} USD to o {Math.Round(WorthEUR - WorthEURY, 2)} USD wiecej niz wczoraj \n				Wartosc	Twoich PLN to {Math.Round(WorthPLN, 2)} USD to o {Math.Round(WorthPLN - WorthPLNY, 2)} USD wiecej niz wczoraj";
+
 	}
+	
 }
