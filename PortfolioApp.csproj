@@ -7,7 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\Pages\JS\**" />
+    <Compile Remove="Components\Pages\Nowy folder\**" />
+    <Content Remove="Components\Pages\JS\**" />
+    <Content Remove="Components\Pages\Nowy folder\**" />
+    <EmbeddedResource Remove="Components\Pages\JS\**" />
+    <EmbeddedResource Remove="Components\Pages\Nowy folder\**" />
+    <None Remove="Components\Pages\JS\**" />
+    <None Remove="Components\Pages\Nowy folder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Components\Nowy folder\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\skrypt.js" />
   </ItemGroup>
 
   <ItemGroup>

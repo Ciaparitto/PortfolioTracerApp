@@ -1,0 +1,11 @@
+﻿@page "/test" 
+
+<h3>Test @test</h3>
+<button @onclick="TEST">kliknij</button>
+@code {
+	private string test;
+	private void TEST()
+	{
+		test = "dziala";
+	}
+}

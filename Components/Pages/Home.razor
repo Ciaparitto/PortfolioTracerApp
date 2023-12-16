@@ -1,34 +1,65 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
 @inject IApiService ApiService;
 @inject IUserService UserService;
 @inject HttpClient httpclinet;
+
+
+
 <PageTitle>Home</PageTitle>
 @if (LoggedUser != null)
 {
 	<h1>Hello @LoggedUser.UserName</h1>
 }
-<p>test @test</p>
+<p id="price">test @test</p>
+<button id="dayButton" onclick='changeprice("XAU", "Metal", 2023, 12, 15)'>Day</button> /// to nie dziala
 
-<p>@MetalPrice</p>
-<button @onclick="GetCurrencyPrice">pobierz dane waluty</button>
-<p>@CurrencyWorth</p>
+<button id="monthButton">Month</button>
+<button id="yearButton">Year</button>
+
+<script>
+
+	function changeprice(ymbol, TypeOfAsset, year, month, day
+	{
+		const metalPrice = await GetMetalPrice(symbol, TypeOfAsset, year, month, day);
+
+		document.getElementById("price").innerHTML = metalPrice;
+	}
+	async function GetMetalPrice(symbol, TypeOfAsset, year, month, day) 
+	{
+		const response = await fetch("/Api/Convert?symbol=${symbol}&typeofmetal=${typeofmetal}&year=${year}&month=${month}&day=${day}");
+		const result = await response.json();
+		return result.Rates["XAU"];
+	}
+
+</script>
 
 @code{
 	public double MetalPrice;
 	public double AmonutOfEUR = 20;
 	public double AmmountOfPLN = 30;
-	public string test;
+	private string test = "22";
 	public string CurrencyWorth;
 	public UserModel LoggedUser;
+	[Inject]
+	private IJSRuntime JSRuntime { get; set; }
 	protected override async Task OnInitializedAsync()
 	{
 		LoggedUser = await UserService.GetLoggedUser();
-		test = await GetMetalPriceMonth(2023, 12, 13, "XAU");
 
+		//test = await GetMetalPrice("XAU", "Metal", 2023,12,15,2022,12,14);
+		
 
+	}
+	private void Test()
+	{
+		test = "ds";
+		Console.WriteLine("Test called");
+	
+		
 	}
 	public async Task<string> GetMetalPriceDay(int year, int month, int day,string symbol)
 	{
@@ -36,11 +67,11 @@
 		var metalprice2 = await ApiService.GetMetalPrice("XAU", "USD", year.ToString(), month.ToString(), (day - 1).ToString());
 		return $"zamina w kursie zlota to {metalprice1.Rates[symbol] - metalprice2.Rates[symbol]}";
 	}
-	public async Task<string> GetMetalPriceMonth(int year, int month, int day, string symbol)
+	public async Task<string> GetMetalPrice(string symbol,string typeofmetal, int year, int month, int day, int year2, int month2, int day2)
 	{
-		var ammount = UserService.GetAmmountOfAsset("XAU", "Metal").Result;
-		var metalprice1 = await ApiService.Convert("USD", "XAU", ammount, year.ToString(), month.ToString(), day.ToString());
-		var metalprice2 = await ApiService.Convert("USD", "XAU", ammount, year.ToString(), (month - 1).ToString(), day.ToString());
+		var ammount = UserService.GetAmmountOfAsset(symbol, typeofmetal).Result;
+		var metalprice1 = await ApiService.Convert("USD", symbol, ammount, year.ToString(), month.ToString(), day.ToString());
+		var metalprice2 = await ApiService.Convert("USD", symbol, ammount, year2.ToString(), month2.ToString(), day2.ToString());
 		var change = Math.Round(metalprice1.Result - metalprice2.Result,2);
 		if(change > 0)
 		{
