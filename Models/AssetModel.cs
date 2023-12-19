@@ -16,8 +16,8 @@ namespace PortfolioApp.Models
 
 		public DateTime AddedDate = DateTime.Now;
 		[ForeignKey("UserId")]
-		public string UserId { get; set; }
-		public UserModel User {  get; set; }
+		public string? UserId { get; set; }
+		public UserModel? User {  get; set; }
 
 	}
 }

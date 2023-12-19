@@ -19,6 +19,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDbService, DbService>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["BaseUrl"]) });
 builder.Services.AddDbContext<AppDbContext>(options =>
 	options.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;TrustServerCertificate=True;Initial Catalog=DbPortfoilo;Integrated Security=True"),

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
+using PortfolioApp.Services.Interfaces;
 
 namespace PortfolioApp.Controllers
 {
@@ -8,13 +10,16 @@ namespace PortfolioApp.Controllers
 	{
 		private readonly UserManager<UserModel> _userManager;
 		private readonly SignInManager<UserModel> _signInManager;
-		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly IDbService _DbService;
+		public readonly IUserService _userService;
+		
 
-		public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IHttpContextAccessor httpContextAccessor)
+		public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
-			_httpContextAccessor = httpContextAccessor;
+			_DbService = dbService;
+			_userService = userService;
 		}
 		public IActionResult Index()
 		{
@@ -64,7 +69,29 @@ namespace PortfolioApp.Controllers
 			return Redirect("https://localhost:7080/");
 
 		}
-		
+		[HttpGet]
+		public IActionResult AddAsset()
+		{
+			return View();
+		}
+		[HttpPost]
+		public async Task<IActionResult> AddAsset(AssetModel body)
+		{
+			
+			if(ModelState.IsValid)
+			{
+				var Model = new AssetModel
+				{
+					AssetCode = body.AssetCode,
+					Ammount = body.Ammount,
+					TypeOfAsset = body.TypeOfAsset,
+					UserId =  _userService.GetLoggedUser().Result.Id,
+				};
+				await _DbService.AddAssetToDb(Model);
+				return Redirect("/");
+			}
+			return View(body);
+		}
 
 	}
 }

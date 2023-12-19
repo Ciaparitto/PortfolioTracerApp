@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 using System.Net.Http;
 
@@ -8,12 +9,14 @@ namespace PortfolioApp.Controllers
 	public class ApiController : Controller
 	{
 		private readonly HttpClient httpClient;
+		private readonly IUserService _userService;
 
 
-		public ApiController(HttpClient httpClient)
+		public ApiController(HttpClient httpClient, IUserService userService)
 		{
 			this.httpClient = httpClient;
 			httpClient.Timeout = TimeSpan.FromSeconds(30);
+			_userService = userService;
 		}
 		public IActionResult Index()
 
@@ -67,8 +70,9 @@ namespace PortfolioApp.Controllers
 				return null;
 			}
 		}
-		public async Task<ConvertModel> Convert(string curr, string symbol, double ammount, string year, string month, string day)
+		public async Task<ConvertModel> Convert(string curr, string symbol, string year, string month, string day)
 		{
+			double ammount = await _userService.GetAmmountOfAsset(symbol, "Metal");
 			string apiKey = "bce54fad4f67965a35c9754582779520";
 			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
 			var url = $"https://api.metalpriceapi.com/v1/convert?api_key={apiKey}&from={symbol}&to={curr}&amount={ammount}&date={year}-{month}-{day}";
