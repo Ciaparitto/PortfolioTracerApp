@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Model;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 using PortfolioApp.Services.Interfaces;
+using System.Net.Http;
 
 namespace PortfolioApp.Controllers
 {
@@ -12,14 +14,15 @@ namespace PortfolioApp.Controllers
 		private readonly SignInManager<UserModel> _signInManager;
 		private readonly IDbService _DbService;
 		public readonly IUserService _userService;
-		
+		private readonly HttpClient httpClient;
 
-		public UserController(UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService)
+		public UserController(HttpClient httpClient,UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_DbService = dbService;
 			_userService = userService;
+			this.httpClient = httpClient;
 		}
 		public IActionResult Index()
 		{
@@ -70,8 +73,103 @@ namespace PortfolioApp.Controllers
 
 		}
 		[HttpGet]
-		public IActionResult AddAsset()
+		public async Task<IActionResult> AddAssetAsync()
 		{
+
+			Dictionary<string, string> CurrenciesDict = new Dictionary<string, string>
+			{
+			{"USD", "United States Dollar"},
+			{"EUR", "Euro"},
+			{"GBP", "British Pound Sterling"},
+			{"JPY", "Japanese Yen"},
+			{"AUD", "Australian Dollar"},
+			{"CAD", "Canadian Dollar"},
+			{"CHF", "Swiss Franc"},
+			{"CNY", "Chinese Yuan"},
+			{"SEK", "Swedish Krona"},
+			{"NZD", "New Zealand Dollar"},
+			{"NOK", "Norwegian Krone"},
+			{"DKK", "Danish Krone"},
+			{"SGD", "Singapore Dollar"},
+			{"HKD", "Hong Kong Dollar"},
+			{"KRW", "South Korean Won"},
+			{"TRY", "Turkish Lira"},
+			{"ZAR", "South African Rand"},
+			{"SAR", "Saudi Riyal"},
+			{"AED", "United Arab Emirates Dirham"},
+			{"QAR", "Qatari Riyal"},
+			{"MYR", "Malaysian Ringgit"},
+			{"THB", "Thai Baht"},
+			{"IDR", "Indonesian Rupiah"},
+			{"INR", "Indian Rupee"},
+			{"PHP", "Philippine Peso"},
+			{"PKR", "Pakistani Rupee"},
+			{"KWD", "Kuwaiti Dinar"},
+			{"BHD", "Bahraini Dinar"},
+			{"OMR", "Omani Rial"},
+			{"JOD", "Jordanian Dinar"},
+			{"GBP", "British Pound Sterling"},
+			{"EUR", "Euro"},
+			{"CHF", "Swiss Franc"},
+			{"CAD", "Canadian Dollar"},
+			{"AUD", "Australian Dollar"},
+			{"NZD", "New Zealand Dollar"},
+			{"SGD", "Singapore Dollar"},
+			{"HKD", "Hong Kong Dollar"},
+			{"SEK", "Swedish Krona"},
+			{"NOK", "Norwegian Krone"},
+			{"DKK", "Danish Krone"},
+			{"JPY", "Japanese Yen"},
+			{"CNY", "Chinese Yuan"},
+			{"KRW", "South Korean Won"},
+			{"TRY", "Turkish Lira"},
+			{"ZAR", "South African Rand"},
+			{"SAR", "Saudi Riyal"},
+			{"AED", "United Arab Emirates Dirham"},
+			{"QAR", "Qatari Riyal"},
+			{"MYR", "Malaysian Ringgit"},
+			{"THB", "Thai Baht"},
+			{"IDR", "Indonesian Rupiah"},
+			{"INR", "Indian Rupee"},
+			{"PHP", "Philippine Peso"},
+			{"PKR", "Pakistani Rupee"},
+			};
+
+			Dictionary<string, string> MetalsDict = new Dictionary<string, string>
+			{
+			{ "XAU", "Gold" },
+			{ "XAG", "Silver" },
+			{ "XPT", "Platinum" },
+			{ "XPD", "Palladium" },
+			};
+
+			Dictionary<string, string> CryptoDict = new Dictionary<string, string>
+			{
+			{ "BTC", "Bitcoin" },
+			{ "ETH", "Ethereum" },
+			{ "XRP", "Ripple" },
+			{ "LTC", "Litecoin" },
+			{ "BCH", "Bitcoin Cash" },
+			{ "ADA", "Cardano" },
+			{ "DOT", "Polkadot" },
+			{ "XLM", "Stellar" },
+			{ "DOGE", "Dogecoin" },
+			{ "USDT", "Tether" },
+			{ "XMR", "Monero" },
+			{ "EOS", "EOS.IO" },
+			{ "TRX", "TRON" },
+			{ "XTZ", "Tezos" },
+			{ "DASH", "Dash" },
+			{ "ATOM", "Cosmos" },
+			{ "LINK", "Chainlink" },
+			{ "UNI", "Uniswap" },
+			{ "AAVE", "Aave" },
+			{ "SNX", "Synthetix" },
+			};
+			ViewBag.Crypto = CryptoDict;
+			ViewBag.Metals = MetalsDict;
+			ViewBag.Currencies = CurrenciesDict;
+
 			return View();
 		}
 		[HttpPost]

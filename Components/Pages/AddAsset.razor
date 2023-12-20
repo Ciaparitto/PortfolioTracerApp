@@ -1,0 +1,94 @@
+﻿@page "/AddAsset"
+@rendermode InteractiveServer
+@using PortfolioApp.Models;
+<EditForm Model="@model" OnValidSubmit="@DodajAsset">
+	<DataAnnotationsValidator />
+
+	<p>Co chcesz dodać: <InputText @bind-Value="model.AssetCode" /></p>
+	<p>Podaj ilość: <InputNumber @bind-Value="model.Ammount" /></p>
+
+	<p>Wybierz rodzaj:</p>
+	<InputSelect @bind-Value="model.TypeOfAsset">
+		<option value="">Wybierz...</option>
+		<option value="Metal">Metal</option>
+		<option value="Currency">Currency</option>
+		<option value="CryptoCurrency">CryptoCurrency</option>
+	</InputSelect>
+
+	<button type="submit">Dodaj</button>
+</EditForm>
+
+
+@code {
+	private AssetModel model = new AssetModel();
+
+	private void DodajAsset()
+	{
+		// Kod obsługujący dodanie assetu
+	}
+	public Dictionary<string, string> CurrenciesDict = new Dictionary<string, string>
+{
+	{"USD", "United States Dollar"},
+	{"EUR", "Euro"},
+	{"GBP", "British Pound Sterling"},
+	{"JPY", "Japanese Yen"},
+	{"AUD", "Australian Dollar"},
+	{"CAD", "Canadian Dollar"},
+	{"CHF", "Swiss Franc"},
+	{"CNY", "Chinese Yuan"},
+	{"SEK", "Swedish Krona"},
+	{"NZD", "New Zealand Dollar"},
+	{"NOK", "Norwegian Krone"},
+	{"DKK", "Danish Krone"},
+	{"SGD", "Singapore Dollar"},
+	{"HKD", "Hong Kong Dollar"},
+	{"KRW", "South Korean Won"},
+	{"TRY", "Turkish Lira"},
+	{"ZAR", "South African Rand"},
+	{"SAR", "Saudi Riyal"},
+	{"AED", "United Arab Emirates Dirham"},
+	{"QAR", "Qatari Riyal"},
+	{"MYR", "Malaysian Ringgit"},
+	{"THB", "Thai Baht"},
+	{"IDR", "Indonesian Rupiah"},
+	{"INR", "Indian Rupee"},
+	{"PHP", "Philippine Peso"},
+	{"PKR", "Pakistani Rupee"},
+	{"KWD", "Kuwaiti Dinar"},
+	{"BHD", "Bahraini Dinar"},
+	{"OMR", "Omani Rial"},
+	{"JOD", "Jordanian Dinar"}
+};
+
+	public Dictionary<string, string> MetalsDict = new Dictionary<string, string>
+			{
+			{ "XAU", "Gold" },
+			{ "XAG", "Silver" },
+			{ "XPT", "Platinum" },
+			{ "XPD", "Palladium" },
+			};
+
+	public Dictionary<string, string> CryptoDict = new Dictionary<string, string>
+			{
+			{ "BTC", "Bitcoin" },
+			{ "ETH", "Ethereum" },
+			{ "XRP", "Ripple" },
+			{ "LTC", "Litecoin" },
+			{ "BCH", "Bitcoin Cash" },
+			{ "ADA", "Cardano" },
+			{ "DOT", "Polkadot" },
+			{ "XLM", "Stellar" },
+			{ "DOGE", "Dogecoin" },
+			{ "USDT", "Tether" },
+			{ "XMR", "Monero" },
+			{ "EOS", "EOS.IO" },
+			{ "TRX", "TRON" },
+			{ "XTZ", "Tezos" },
+			{ "DASH", "Dash" },
+			{ "ATOM", "Cosmos" },
+			{ "LINK", "Chainlink" },
+			{ "UNI", "Uniswap" },
+			{ "AAVE", "Aave" },
+			{ "SNX", "Synthetix" },
+			};
+}
