@@ -1,33 +1,51 @@
 ﻿@page "/AddAsset"
 @rendermode InteractiveServer
+@attribute [Authorize]
+@inject IDbService _DbService;
+@inject IUserService _userService;
+@using Microsoft.AspNetCore.Authorization
+@using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models;
-<EditForm Model="@model" OnValidSubmit="@DodajAsset">
-	<DataAnnotationsValidator />
-
-	<p>Co chcesz dodać: <InputText @bind-Value="model.AssetCode" /></p>
-	<p>Podaj ilość: <InputNumber @bind-Value="model.Ammount" /></p>
-
-	<p>Wybierz rodzaj:</p>
-	<InputSelect @bind-Value="model.TypeOfAsset">
+@using PortfolioApp.Services.Interfaces
+<EditForm Model="@model" OnValidSubmit="@DodajAsset" OnInvalidSubmit="@HandleInvalidSubmit">
+	
+	
+	Wybierz rodzaj <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType" >
 		<option value="">Wybierz...</option>
 		<option value="Metal">Metal</option>
 		<option value="Currency">Currency</option>
 		<option value="CryptoCurrency">CryptoCurrency</option>
 	</InputSelect>
-
+	<p></p>
+	Co chcesz dodać<InputSelect @bind-Value="model.AssetCode">
+		<option value="">Wybierz...</option>
+		@foreach (var option in Dict)
+		{
+			<option value=@option.Key>@option.Value</option>
+		}
+	</InputSelect>
+	    <InputHidden Value="@model.UserId" />
+		<InputHidden Value="@model.User" />\
+		<InputHidden Value="@model.id" />
+	
+	@if (selectedType == "Metal")
+	{
+		<p>Ile uncji chcesz dodac </p> <InputNumber @bind-Value="model.Ammount" />
+	}
+	else
+	{
+		<p>Ile sztuk chcesz dodac </p> <InputNumber @bind-Value="model.Ammount" />
+	}
+	<p>@AddingMessage</p>
+	
+	
 	<button type="submit">Dodaj</button>
 </EditForm>
 
 
 @code {
-	private AssetModel model = new AssetModel();
-
-	private void DodajAsset()
-	{
-		// Kod obsługujący dodanie assetu
-	}
 	public Dictionary<string, string> CurrenciesDict = new Dictionary<string, string>
-{
+	{
 	{"USD", "United States Dollar"},
 	{"EUR", "Euro"},
 	{"GBP", "British Pound Sterling"},
@@ -57,16 +75,17 @@
 	{"KWD", "Kuwaiti Dinar"},
 	{"BHD", "Bahraini Dinar"},
 	{"OMR", "Omani Rial"},
-	{"JOD", "Jordanian Dinar"}
+	{"JOD", "Jordanian Dinar"},
+	{"PLN","Polish Zloty"}
 };
 
 	public Dictionary<string, string> MetalsDict = new Dictionary<string, string>
-			{
+	{
 			{ "XAU", "Gold" },
 			{ "XAG", "Silver" },
 			{ "XPT", "Platinum" },
 			{ "XPD", "Palladium" },
-			};
+	};
 
 	public Dictionary<string, string> CryptoDict = new Dictionary<string, string>
 			{
@@ -91,4 +110,77 @@
 			{ "AAVE", "Aave" },
 			{ "SNX", "Synthetix" },
 			};
+	public AssetModel model = new AssetModel();
+	public string selectedType = string.Empty;
+	public Dictionary<string, string> Dict;
+	public string AddingMessage = "test";
+
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		Dictionary<string, string> AllAssetsDict = MetalsDict
+			.Concat(CurrenciesDict)
+			.Concat(CryptoDict)
+			.ToDictionary(pair => pair.Key, pair => pair.Value);
+		Dict = AllAssetsDict;
+	}
+
+	private void UpdateSelectedType(ChangeEventArgs Event)
+	{
+		selectedType = Event.Value?.ToString();
+		if (selectedType == "Currency")
+		{
+			Dict = CurrenciesDict;
+		}
+		else if (selectedType == "Metal")
+		{
+			Dict = MetalsDict;
+		}
+		else if (selectedType == "CryptoCurrency")
+		{
+			Dict = CryptoDict;
+		}
+	}
+
+	public async Task DodajAsset()
+	{
+
+		if(!string.IsNullOrEmpty(model.AssetCode) && !string.IsNullOrEmpty(model.TypeOfAsset) && model.Ammount !=0)
+		{
+			try
+			{
+				Console.WriteLine(model.AssetCode);
+				Console.WriteLine(model.TypeOfAsset);
+				Console.WriteLine(model.Ammount);
+				//var UserId = _userService.GetLoggedUser().Result.Id;
+				model.UserId = "7a414c4e-1410-455f-bebc-c15bbdcb8365";
+				Console.WriteLine("Przed dodaniem do bazy danych");
+				await _DbService.AddAssetToDb(model);
+				Console.WriteLine("po dodaniu");
+				AddingMessage = $"Pomyslnie dodano {model.AssetCode} w ilosci {model.Ammount}";
+				await Task.Delay(3000);
+				AddingMessage = "";
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+				AddingMessage = "blad";
+				await Task.Delay(3000);
+				AddingMessage = "";
+
+			}
+		}else
+		{
+			AddingMessage = "wprowadz dane";
+			await Task.Delay(3000);
+			AddingMessage = "";
+		}
+
+	}
+	public void HandleInvalidSubmit()
+	{
+		AddingMessage = "nie dziala";
+	}
+
 }
