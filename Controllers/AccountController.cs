@@ -8,7 +8,7 @@ using System.Net.Http;
 
 namespace PortfolioApp.Controllers
 {
-	public class UserController : Controller
+	public class AccountController : Controller
 	{
 		private readonly UserManager<UserModel> _userManager;
 		private readonly SignInManager<UserModel> _signInManager;
@@ -16,7 +16,7 @@ namespace PortfolioApp.Controllers
 		public readonly IUserService _userService;
 		private readonly HttpClient httpClient;
 
-		public UserController(HttpClient httpClient,UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService)
+		public AccountController(HttpClient httpClient,UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;

@@ -7,7 +7,7 @@
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models;
 @using PortfolioApp.Services.Interfaces
-<EditForm Model="@model" OnValidSubmit="@DodajAsset" OnInvalidSubmit="@HandleInvalidSubmit">
+<EditForm Model="@model" OnValidSubmit="@AddAssetfunc">
 	
 	
 	Wybierz rodzaj <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType" >
@@ -35,11 +35,9 @@
 	else
 	{
 		<p>Ile sztuk chcesz dodac </p> <InputNumber @bind-Value="model.Ammount" />
-	}
-	<p>@AddingMessage</p>
-	
-	
+	}	
 	<button type="submit">Dodaj</button>
+	<p>@AddingMessage</p>
 </EditForm>
 
 
@@ -113,7 +111,7 @@
 	public AssetModel model = new AssetModel();
 	public string selectedType = string.Empty;
 	public Dictionary<string, string> Dict;
-	public string AddingMessage = "test";
+	public string AddingMessage = "";
 
 
 
@@ -143,7 +141,7 @@
 		}
 	}
 
-	public async Task DodajAsset()
+	public async Task AddAssetfunc()
 	{
 
 		if(!string.IsNullOrEmpty(model.AssetCode) && !string.IsNullOrEmpty(model.TypeOfAsset) && model.Ammount !=0)
@@ -153,34 +151,31 @@
 				Console.WriteLine(model.AssetCode);
 				Console.WriteLine(model.TypeOfAsset);
 				Console.WriteLine(model.Ammount);
-				//var UserId = _userService.GetLoggedUser().Result.Id;
-				model.UserId = "7a414c4e-1410-455f-bebc-c15bbdcb8365";
+				var User = await _userService.GetLoggedUser();
+				model.UserId = User.Id;
 				Console.WriteLine("Przed dodaniem do bazy danych");
 				await _DbService.AddAssetToDb(model);
 				Console.WriteLine("po dodaniu");
-				AddingMessage = $"Pomyslnie dodano {model.AssetCode} w ilosci {model.Ammount}";
-				await Task.Delay(3000);
-				AddingMessage = "";
+				await ChangeMessage($"pomyslnie dodano {Dict[model.AssetCode]} w ilosci {model.Ammount}");
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex);
-				AddingMessage = "blad";
-				await Task.Delay(3000);
-				AddingMessage = "";
+				await ChangeMessage($"blad {ex}");
 
 			}
 		}else
 		{
-			AddingMessage = "wprowadz dane";
-			await Task.Delay(3000);
-			AddingMessage = "";
+			await ChangeMessage("wprowadz dane");
 		}
 
 	}
-	public void HandleInvalidSubmit()
+	public async Task ChangeMessage(string Message)
 	{
-		AddingMessage = "nie dziala";
+		AddingMessage = Message;
+		StateHasChanged();
+		await Task.Delay(5000);
+		StateHasChanged();
+		AddingMessage = "";
 	}
-
+	
 }

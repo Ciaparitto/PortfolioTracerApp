@@ -32,6 +32,8 @@ namespace PortfolioApp.Controllers
 
 			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
 			string url = $"https://api.metalpriceapi.com/v1/{year}-{month}-{day}?api_key={apiKey}&base=USD";
+			
+		
 			try
 
 			{
@@ -76,7 +78,7 @@ namespace PortfolioApp.Controllers
 			string apiKey = "bce54fad4f67965a35c9754582779520";
 			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
 			var url = $"https://api.metalpriceapi.com/v1/convert?api_key={apiKey}&from={symbol}&to={curr}&amount={ammount}&date={year}-{month}-{day}";
-
+			//string url = $"https://api.metalpriceapi.com/v1/2023-12-20";
 			try
 			{
 				var response = httpClient.GetAsync(url).Result;

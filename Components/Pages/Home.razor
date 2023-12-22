@@ -10,6 +10,12 @@
 
 
 <PageTitle>Home</PageTitle>
+	sprawdz cene <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
+	<option value="All">Wszytsko </option>
+	<option value="Metal">Metal</option>
+	<option value="Currency">Currency</option>
+	<option value="CryptoCurrency">CryptoCurrency</option>
+</InputSelect>
 @if (LoggedUser != null)
 {
 	<h1>Hello @LoggedUser.UserName</h1>
@@ -61,6 +67,8 @@
 </script>
 
 @code{
+	public AssetModel model = new AssetModel();
+	public string selectedType = string.Empty;
 	public double MetalPrice;
 	public double AmonutOfEUR = 20;
 	public double AmmountOfPLN = 30;
@@ -77,6 +85,10 @@
 		//test = await GetMetalPrice("XAU", "Metal", 2023,12,15,2022,12,14);
 
 
+	}
+	private void UpdateSelectedType(ChangeEventArgs Event)
+	{
+	
 	}
 	[JSInvokable]
 	public async Task UpdatePrice(string metalPrice)
@@ -111,26 +123,6 @@
 		}
 		return "error";
 	}
-	public async Task<double> GetMetalPriceYear(int year, int month, int day,string symbol)
-	{
-		var metalprice1 = await ApiService.GetMetalPrice("XAU", "USD", year.ToString(), month.ToString(), day.ToString());
-		var metalprice2 = await ApiService.GetMetalPrice("XAU", "USD", (year-1).ToString(), month.ToString(), day.ToString());
-		return Convert.ToDouble(metalprice1.Rates[symbol] - metalprice2.Rates[symbol]);
-	}
-	public async Task GetCurrencyPrice()
-	{
-		var resultCurrencyYesterDay = await ApiService.GetCurrencyPrice("USD", "EUR,PLN,CAD", "2023", "12", "09");
-		var resultCurrency = await ApiService.GetCurrencyPrice("USD", "EUR,PLN,CAD", "2023", "12", "10");
-
-		var WorthPLN = AmmountOfPLN * Convert.ToDouble(resultCurrency.Rates["PLN"]);
-		var WorthEUR = AmonutOfEUR * Convert.ToDouble(resultCurrency.Rates["EUR"]); 
-
-		var WorthPLNY = AmmountOfPLN * Convert.ToDouble(resultCurrencyYesterDay.Rates["PLN"]);
-		var WorthEURY = AmonutOfEUR * Convert.ToDouble(resultCurrencyYesterDay.Rates["EUR"]);
-
-
-		CurrencyWorth = $"Wartosc Twoich EURO to {Math.Round(WorthEUR,2)} USD to o {Math.Round(WorthEUR - WorthEURY, 2)} USD wiecej niz wczoraj \n				Wartosc	Twoich PLN to {Math.Round(WorthPLN, 2)} USD to o {Math.Round(WorthPLN - WorthPLNY, 2)} USD wiecej niz wczoraj";
-
-	}
+	
 	
 }
