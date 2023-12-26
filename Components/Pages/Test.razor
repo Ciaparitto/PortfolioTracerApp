@@ -1,11 +1,17 @@
-﻿@page "/test" 
+﻿@page "/test"
+@inject IJSRuntime JSRuntime
 
-<h3>Test @test</h3>
-<button @onclick="TEST">kliknij</button>
+<h3>Test Page</h3>
+
+<!-- Correct script reference -->
+<script src="js/HomeScript.js"></script>
+
+<button @onclick="TEST">Click me</button>
+
 @code {
-	private string test;
-	private void TEST()
-	{
-		test = "dziala";
-	}
+    private void TEST()//to sie nie wykonuje
+    {
+    
+        JSRuntime.InvokeVoidAsync("test" ,"x");
+    }
 }
