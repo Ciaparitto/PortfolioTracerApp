@@ -1,6 +1,7 @@
-﻿function test(x) {
-	console.log(x);
-	alert(x);
+﻿
+function test() {
+	console.log("dziala");
+	alert("dziala");
 }
 document.addEventListener('DOMContentLoaded', function () {
 

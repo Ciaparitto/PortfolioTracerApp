@@ -9,9 +9,11 @@
 @inject HttpClient httpclinet;
 
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script src="js/ChartScript.js"</script>
+<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
 <PageTitle>Home</PageTitle>
-<body>
+
 	sprawdz cene <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
 	<option value="All">Wszytsko </option>
 	<option value="Metal">Metal</option>
@@ -26,10 +28,7 @@
 <button id="dayButton" onclick='changeprice("XAU", 2023, 12, 15,2023, 12, 14)'>Day</button>
 <button id="monthButton" onclick='changeprice("XAU", 2023, 12, 15,2023, 11, 15)'>Month</button>
 <button id="monthButton" onclick='changeprice("XAU", 2023, 12, 15,2022, 12, 15)'>Year</button>
-	<button @onclick="testvoid">klinij</button>
-</body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-<script src="~/HomeScript.js"></script>
+	<button @onclick="@(() =>  testvoid())">klinij</button>
 
 
 
@@ -50,7 +49,7 @@
 	}
 	async private Task testvoid()
 	{
-		await JSRuntime.InvokeVoidAsync("test");
+		await JSRuntime.InvokeVoidAsync("test","dziala");
 		Console.WriteLine("po wyslaniu");
 	}
 	private void UpdateSelectedType(ChangeEventArgs Event)
