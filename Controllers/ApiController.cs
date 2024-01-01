@@ -75,7 +75,7 @@ namespace PortfolioApp.Controllers
 		public async Task<ConvertModel> Convert(string curr, string symbol, string year, string month, string day)
 		{
 			double ammount = await _userService.GetAmmountOfAsset(symbol, "Metal");
-			string apiKey = "bce54fad4f67965a35c9754582779520";
+			string apiKey = "85adac14ec2296ecfc8b30134aafa943";
 			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
 			var url = $"https://api.metalpriceapi.com/v1/convert?api_key={apiKey}&from={symbol}&to={curr}&amount={ammount}&date={year}-{month}-{day}";
 			//string url = $"https://api.metalpriceapi.com/v1/2023-12-20";
@@ -83,7 +83,7 @@ namespace PortfolioApp.Controllers
 			{
 				var response = httpClient.GetAsync(url).Result;
 
-				//response.EnsureSuccessStatusCode();
+			
 				string result = await response.Content.ReadAsStringAsync();
 				var Metal = JsonConvert.DeserializeObject<ConvertModel>(result);
 				return Metal;

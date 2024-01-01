@@ -10,7 +10,7 @@
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-<script src="js/ChartScript.js"</script>
+<script src="js/HomeScript.js"</script>
 <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
 <PageTitle>Home</PageTitle>
 
@@ -41,7 +41,7 @@
 	private string test = "22";
 	public string CurrencyWorth;
 	public UserModel LoggedUser;
-	public ConvertModel wnm;
+
 	protected override async Task OnInitializedAsync()
 	{
 		LoggedUser = await UserService.GetLoggedUser();
@@ -54,20 +54,19 @@
 	}
 	private void UpdateSelectedType(ChangeEventArgs Event)
 	{
-	
+
 	}
 	[JSInvokable]
 	public async Task UpdatePrice(string metalPrice)
 	{
-		
+
 		test = metalPrice;
 		await InvokeAsync(() => StateHasChanged());
 	}
-	public async Task<string> GetMetalPriceDay(int year, int month, int day,string symbol)
+	public async Task<decimal> GetMetalPriceDay(int year, int month, int day,string symbol,int ammount)
 	{
-		var metalprice1 = await ApiService.GetMetalPrice("XAU", "USD", year.ToString(), month.ToString(), day.ToString());
-		var metalprice2 = await ApiService.GetMetalPrice("XAU", "USD", year.ToString(), month.ToString(), (day - 1).ToString());
-		return $"zamina w kursie zlota to {metalprice1.Rates[symbol] - metalprice2.Rates[symbol]}";
+		var metalprice1 = await ApiService.Convert("USD", symbol, ammount, year.ToString(), month.ToString(), day.ToString());
+		return metalprice1.Result;
 	}
 	public async Task<string> GetMetalPrice(string symbol,string typeofmetal, int year, int month, int day, int year2, int month2, int day2)
 	{
