@@ -1,12 +1,14 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 @inject IJSRuntime JSRuntime
+@using Microsoft.AspNetCore.Authorization
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
 @inject IApiService ApiService;
 @inject IUserService UserService;
 @inject HttpClient httpclinet;
+@attribute [Authorize]
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
@@ -29,7 +31,6 @@
 <button id="monthButton" onclick='changeprice("XAU", 2023, 12, 15,2023, 11, 15)'>Month</button>
 <button id="monthButton" onclick='changeprice("XAU", 2023, 12, 15,2022, 12, 15)'>Year</button>
 	<button @onclick="@(() =>  testvoid())">klinij</button>
-
 
 
 @code{
@@ -59,35 +60,10 @@
 	[JSInvokable]
 	public async Task UpdatePrice(string metalPrice)
 	{
-
 		test = metalPrice;
 		await InvokeAsync(() => StateHasChanged());
 	}
-	public async Task<decimal> GetMetalPriceDay(int year, int month, int day,string symbol,int ammount)
-	{
-		var metalprice1 = await ApiService.Convert("USD", symbol, ammount, year.ToString(), month.ToString(), day.ToString());
-		return metalprice1.Result;
-	}
-	public async Task<string> GetMetalPrice(string symbol,string typeofmetal, int year, int month, int day, int year2, int month2, int day2)
-	{
-		var ammount = UserService.GetAmmountOfAsset(symbol, typeofmetal).Result;
-		var metalprice1 = await ApiService.Convert("USD", symbol, ammount, year.ToString(), month.ToString(), day.ToString());
-		var metalprice2 = await ApiService.Convert("USD", symbol, ammount, year2.ToString(), month2.ToString(), day2.ToString());
-		var change = Math.Round(metalprice1.Result - metalprice2.Result,2);
-		if(change > 0)
-		{
-			return $"twoje zloto usroslo o {change} USD";
-		}
-		if (change < 0)
-		{
-			return $"twoje zloto spadlo o {change} USD";
-		}
-		if(change == 0)
-		{
-			return $"twoje zloto jest warte {change} USD";
-		}
-		return "error";
-	}
+
 	
 	
 }

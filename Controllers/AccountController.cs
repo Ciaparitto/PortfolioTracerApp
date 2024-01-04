@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Model;
+using Microsoft.EntityFrameworkCore;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 using PortfolioApp.Services.Interfaces;
@@ -15,14 +16,15 @@ namespace PortfolioApp.Controllers
 		private readonly IDbService _DbService;
 		public readonly IUserService _userService;
 		private readonly HttpClient httpClient;
-
-		public AccountController(HttpClient httpClient,UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService)
+		private readonly AppDbContext _Context;
+		public AccountController(HttpClient httpClient,UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService, AppDbContext context)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_DbService = dbService;
 			_userService = userService;
 			this.httpClient = httpClient;
+			_Context = context;
 		}
 		public IActionResult Index()
 		{
@@ -190,6 +192,26 @@ namespace PortfolioApp.Controllers
 			}
 			return View(body);
 		}
+		public async Task<UserModel> GetLoggedUser()
+		{
+			var USER = await _userManager.GetUserAsync(User);
+			return USER;
+		}
+		public async Task<double> GetAmmountOfAsset(string AssetCode)
+		{
+			var User = await GetLoggedUser();
+			if (User != null)
+			{
 
+				var AssetList = _Context.Assets.Where(x => x.AssetCode == AssetCode && x.UserId == User.Id).ToList();
+				double Ammount = 0;
+				foreach (var Asset in AssetList)
+				{
+					Ammount += Asset.Ammount;
+				}
+				return Ammount;
+			}
+			return 0;
+		}
 	}
 }
