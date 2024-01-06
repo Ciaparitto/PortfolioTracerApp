@@ -213,5 +213,19 @@ namespace PortfolioApp.Controllers
 			}
 			return 0;
 		}
+		public async Task<Dictionary<string,double>> GetUserAssets()
+		{
+			var User = await GetLoggedUser();
+			var Dict = new Dictionary<string,double>();
+			if (User != null)
+			{
+				var AssetList = _Context.Assets.Where(x => x.UserId == User.Id).ToList();
+				foreach (var Asset in AssetList)
+				{
+					Dict[Asset.AssetCode] = Asset.Ammount;
+				}				
+			}
+			return Dict;
+		}
 	}
 }

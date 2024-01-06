@@ -5,7 +5,7 @@
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
-@inject IApiService ApiService;
+@inject IApiService _ApiService;
 @inject IUserService UserService;
 @inject HttpClient httpclinet;
 @attribute [Authorize]
@@ -26,11 +26,11 @@
 {
 	<h1>Hello @LoggedUser.UserName</h1>
 }
-<p id="price">test @test</p>
+
 <button id="dayButton" onclick='changeprice("XAU", 2023, 12, 15,2023, 12, 14)'>Day</button>
 <button id="monthButton" onclick='changeprice("XAU", 2023, 12, 15,2023, 11, 15)'>Month</button>
 <button id="monthButton" onclick='changeprice("XAU", 2023, 12, 15,2022, 12, 15)'>Year</button>
-	<button @onclick="@(() =>  testvoid())">klinij</button>
+	
 
 
 @code{
@@ -39,31 +39,55 @@
 	public double MetalPrice;
 	public double AmonutOfEUR = 20;
 	public double AmmountOfPLN = 30;
-	private string test = "22";
 	public string CurrencyWorth;
 	public UserModel LoggedUser;
+
+	public Dictionary<string, string> MetalDict;
+	public Dictionary<string, string> CurrencyDict;
+	public Dictionary<string, string> CryptoCurrencyDict;
+	public Dictionary<string, string> Dict;
+	public Dictionary<string, string> AllAssetsDict;
 
 	protected override async Task OnInitializedAsync()
 	{
 		LoggedUser = await UserService.GetLoggedUser();
 
+		MetalDict = await _ApiService.GetMetalDict();
+
+		CurrencyDict = await _ApiService.GetCurrencyDict();
+
+		CryptoCurrencyDict = await _ApiService.GetCryptoCurrencyDict();
+
+
+		AllAssetsDict = CurrencyDict
+			.Concat(MetalDict)
+			.Concat(CryptoCurrencyDict)
+			.ToDictionary(pair => pair.Key, pair => pair.Value);
+		Dict = AllAssetsDict;
+
 	}
-	async private Task testvoid()
-	{
-		await JSRuntime.InvokeVoidAsync("test","dziala");
-		Console.WriteLine("po wyslaniu");
-	}
+	
 	private void UpdateSelectedType(ChangeEventArgs Event)
 	{
-
+		selectedType = Event.Value?.ToString();
+		if (selectedType == "Currency")
+		{
+			Dict = CurrencyDict;
+		}
+		else if (selectedType == "Metal")
+		{
+			Dict = MetalDict;
+		}
+		else if (selectedType == "CryptoCurrency")
+		{
+			Dict = CryptoCurrencyDict;
+		}
+		else
+		{
+			Dict = AllAssetsDict;
+		}
 	}
-	[JSInvokable]
-	public async Task UpdatePrice(string metalPrice)
-	{
-		test = metalPrice;
-		await InvokeAsync(() => StateHasChanged());
-	}
-
+	
 	
 	
 }

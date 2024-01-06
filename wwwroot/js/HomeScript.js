@@ -11,7 +11,7 @@ temporaryArrayy = [];
 
   
 document.addEventListener('DOMContentLoaded', function () {
-    GetData("XAU");
+ 
 });
 
 function createChart() {
@@ -28,9 +28,8 @@ function createChart() {
     });
 }
 
-const GetData = async (AssetCode) => {
+const GetDataLegacy = async (AssetCode) => {
   
-
     for (let i = 0; i < 10; i++) {
         const year = (today.getFullYear() - 2) - i;
         const month = today.getMonth();
@@ -51,6 +50,25 @@ const GetData = async (AssetCode) => {
 
     createChart();
 };
+function GetData(period) {
+    var dictionary = {};
+    const AssetDict = await fetch("/Account/GetUserAssets");
+    if (period = "Day")
+    {
+        for (let i = 0, i < 10; i++)
+        {
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const day = (today.day() - 1) - i;
+            var Rates = GetRates(`${year}-${month}-${day}`);
+            for (const Asset in AssetDict)
+            {
+                //DO IT I DONT HAVE IDEA HOW  TO DO IT 
+            }
+        }
+    }
+
+}
 async function changeprice(symbol, year, month, day, year2, month2, day2) {
 	console.log("start");
 	const response = await fetch(`/Api/Convert?curr=USD&symbol=${symbol}&year=${year}&month=${month}&day=${day}`);
@@ -80,9 +98,7 @@ async function changeprice(symbol, year, month, day, year2, month2, day2) {
 }
 
 
-async function GetMetalPrice(symbol, ammount, year, month, day) {
-    const response = await fetch(`/Api/Convert?curr=USD&symbol=${symbol}&ammount=${ammount}&year=${year}&month=${month}&day=${day}`);
-	const result = await response.json();
-
-	return result.info.quote;
+async function GetRates(date) {
+    const response = await fetch(`/Api/GetRatesByDay?Date=${date}`);
+    return response;
 }

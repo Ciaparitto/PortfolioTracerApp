@@ -1,6 +1,7 @@
 ﻿@page "/AddAsset"
 @rendermode InteractiveServer
 @attribute [Authorize]
+@inject IApiService _ApiService;
 @inject IDbService _DbService;
 @inject IUserService _userService;
 @inject HttpClient _httpClient;
@@ -59,20 +60,13 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		//api dont get  data 
-		//fix it
-		var MetalDictResponse = await _httpClient.GetAsync("/api/GetMetalDict");
-		string jsonContentMetal = await MetalDictResponse.Content.ReadAsStringAsync();
-		MetalDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonContentMetal);
-		Console.WriteLine(MetalDict.Count);
-		var CurrencyDictResponse = await _httpClient.GetAsync("/api/GetCurrencyDict");
-		string jsonContentCurrency = await CurrencyDictResponse.Content.ReadAsStringAsync(); 
-		CurrencyDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonContentCurrency); 
-		Console.WriteLine(CurrencyDict.Count);
-		var CryptoCurrencyDictResponse = await _httpClient.GetAsync("/api/GetCryptoCurrencyDict");
-		string jsonContentCryptoCurrency = await CryptoCurrencyDictResponse.Content.ReadAsStringAsync(); 
-		CryptoCurrencyDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonContentCryptoCurrency); 
-		Console.WriteLine(CryptoCurrencyDict.Count);
+		MetalDict = await _ApiService.GetMetalDict();
+
+		CurrencyDict = await _ApiService.GetCurrencyDict();
+
+		CryptoCurrencyDict = await _ApiService.GetCryptoCurrencyDict();
+		
+
 		Dictionary<string, string> AllAssetsDict = CurrencyDict
 			.Concat(MetalDict)
 			.Concat(CryptoCurrencyDict)
