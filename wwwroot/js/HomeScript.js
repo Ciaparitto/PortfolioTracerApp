@@ -9,7 +9,7 @@ today = new Date();
 temporaryArrayx = [];
 temporaryArrayy = [];
 
-  
+
 document.addEventListener('DOMContentLoaded', function () {
  
 });
@@ -50,23 +50,91 @@ const GetDataLegacy = async (AssetCode) => {
 
     createChart();
 };
-function GetData(period) {
-    var dictionary = {};
-    const AssetDict = await fetch("/Account/GetUserAssets");
-    if (period = "Day")
-    {
-        for (let i = 0, i < 10; i++)
-        {
-            const year = today.getFullYear();
-            const month = today.getMonth();
-            const day = (today.day() - 1) - i;
-            var Rates = GetRates(`${year}-${month}-${day}`);
-            for (const Asset in AssetDict)
-            {
-                //DO IT I DONT HAVE IDEA HOW  TO DO IT 
+async function GetData(period) {
+    const today = new Date();
+    const yValuesTemp = [];
+    const xValuesTemp = [];
+    const dictionaryValues = {};
+    console.log(period);
+    const response = await fetch("/Account/GetUserAssets");
+    const AssetDict = await response.json();
+
+    switch (period) {
+        case "Week":
+            for (let i = 0; i < 7; i++) {
+                let value = 0;
+                const year = today.getFullYear();
+                const month = today.getMonth() + 1;
+                const day = today.getDate() - 1 - i;
+                const formattedDate = new Date(year, month - 1, day).toLocaleDateString("en-CA");
+                const Rates = await GetRates(formattedDate);
+
+                for (const Asset of AssetDict) {
+                    value += Rates[Asset.Key] * Asset.Value;
+                }
+                dictionaryValues[formattedDate] = value;
             }
-        }
+            break;
+        case "Month":
+            for (let i = 0; i < 30; i++) {
+                let value = 0;
+                const year = today.getFullYear();
+                const month = today.getMonth();
+                const day = today.getDate() - 1 - i;
+                const formattedDate = new Date(year, month, day).toLocaleDateString("en-CA");
+                const Rates = await GetRates(formattedDate);
+
+                for (const Asset of AssetDict) {
+                    value += Rates[Asset.Key] * Asset.Value;
+                }
+                dictionaryValues[formattedDate] = value;
+            }
+            break;
+        case "Year":
+            for (let i = 0; i < 365; i++) {
+                let value = 0;
+                const year = today.getFullYear();
+                const month = today.getMonth();
+                const day = today.getDate() - 1 - i;
+                const formattedDate = new Date(year, month, day).toLocaleDateString("en-CA");
+                const Rates = await GetRates(formattedDate);
+
+                for (const Asset of AssetDict) {
+                    value += Rates[Asset.Key] * Asset.Value;
+                }
+                dictionaryValues[formattedDate] = value;
+            }
+            break;
+        case "TenYears":
+            for (let i = 0; i < 3650; i++) {
+                let value = 0;
+                const year = today.getFullYear();
+                const month = today.getMonth();
+                const day = today.getDate() - 1 - i;
+                const formattedDate = new Date(year, month, day).toLocaleDateString("en-CA");
+                const Rates = await GetRates(formattedDate);
+
+                for (const Asset of AssetDict) {
+                    value += Rates[Asset.Key] * Asset.Value;
+                }
+                dictionaryValues[formattedDate] = value;
+            }
+            break;
+        default:
+            break;
+
+            for (const Asset in dictionaryValues)
+            {
+                xValuesTemp = Asset.Key;
+                yValuesTemp = Asset.Value;
+            }
+            xValues = xValuesTemp.reverse();
+            yValues = yValuesTemp.reverse();
+            console.log(xValues);
+            console.log(yValues);
+            createChart();
     }
+   
 
 }
 async function changeprice(symbol, year, month, day, year2, month2, day2) {
@@ -99,6 +167,7 @@ async function changeprice(symbol, year, month, day, year2, month2, day2) {
 
 
 async function GetRates(date) {
-    const response = await fetch(`/Api/GetRatesByDay?Date=${date}`);
-    return response;
+    const response = await fetch(`/Account/GetRates?date=${date}`);
+    const rates = await response.json();
+    return rates;
 }

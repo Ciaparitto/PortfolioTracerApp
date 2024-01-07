@@ -31,14 +31,7 @@ namespace PortfolioApp.Controllers
 			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
 			string url = $"https://api.metalpriceapi.com/v1/{Date}";
 
-			/*
-			 pobierz wartosc
-			pomnoz przez ammount
-			pobierz kolejna wartosc 
-			to samo dla wszystkich zasobow z tego dnia
-			potem to samo dla wszyskich dni 
-			rysuj wykres
-			 */
+	
 
 			try
 
