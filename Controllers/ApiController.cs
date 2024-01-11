@@ -26,7 +26,7 @@ namespace PortfolioApp.Controllers
 		public async Task<CurrencyModel> GetRatesByDay(string Date)
 		{
 
-			string apiKey = "9f82cc4f45ef55ef227436c1a9c8c1a1";
+			string apiKey = "febd27b7218695192187494794f10077";
 			string date = "2023-05-05";
 			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
 			string url = $"https://api.metalpriceapi.com/v1/{Date}?api_key={apiKey}";

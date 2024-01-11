@@ -27,9 +27,10 @@
 	<h1>Hello @LoggedUser.UserName</h1>
 }
 
-<button id="dayButton" onclick='GetData("Week")'>Week</button>
-<button id="monthButton" onclick='GetData("Month")'>Month</button>
-<button id="monthButton" onclick='GetData("Year")'>Year</button>
+<button id="dayButton" onclick='GetData(7,"@selectedType")'>Week</button>
+<button id="monthButton" onclick='GetData(30,"@selectedType")'>Month</button>
+<button id="monthButton" onclick='GetData(365,"@selectedType")'>Year</button>
+<p id="PriceChange"></p>
 	
 
 

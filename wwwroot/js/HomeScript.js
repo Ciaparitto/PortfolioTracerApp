@@ -27,82 +27,171 @@ function createChart() {
         },
     });
 }
+async function CalcPrice(DateArg, typeOfAsset)
+{
+  
+    const Rates = await GetRates(DateArg);
+
+    if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "") {
+        var AssetDict = await fetch("/Account/GetUserAssets");
+    } else {
+        var AssetDict = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
+    }
+  
+    let value = 0
+    for (const [Key, AssetValue] of Object.entries(AssetDict))
+    {
+        value += (1 / parseFloat(Rates.rates[Key])) * parseFloat(AssetValue);
+    }
+      
+    
+    return value.toFixed(2);
+}
+async function GetData(NumberOfDays, typeOfAsset) {
+
+    var yValuesTemp = [];
+    var xValuesTemp = [];
+    const dictionaryValues = {};
+
+    if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "") {
+        var AssetDict = await fetch("/Account/GetUserAssets");
+    } else {
+        var AssetDict = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
+    }
 
 
-async function GetData(period) {
+    for (let i = 0; i < NumberOfDays; i++) {
+        const today = new Date();
+        const NewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1 - i); // Day - 1 becouse API have errors sometimes when i call today date
+        const year = NewDate.getFullYear();
+        const month = NewDate.getMonth() + 1;
+        const day = NewDate.getDate();
+
+        const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        const Rates = await GetRates(formattedDate);
+        for (const period of Object.keys(AssetDict)) {
+            let value = 0
+            for (const [Key, AssetValue] of Object.entries(AssetDict)) {
+                value += (1 / parseFloat(Rates.rates[Key])) * parseFloat(AssetValue);
+            }
+            dictionaryValues[formattedDate] = value.toFixed(2);
+        }
+    }
+    for (const Asset in dictionaryValues) {
+        xValuesTemp.push(Asset);
+        yValuesTemp.push(parseFloat(dictionaryValues[Asset]));
+    }
+    xValues = xValuesTemp.reverse();
+    yValues = yValuesTemp.reverse();
+
+    createChart();
+    // it dont work V
     const today = new Date();
+    const NewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1); // Day - 1 becouse API have errors sometimes when i call today date
+    const year = NewDate.getFullYear();
+    const month = NewDate.getMonth() + 1;
+    const day = NewDate.getDate();
+    const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+  
+    const NewDate2 = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1 - NumberOfDays) // Day - 1 becouse API have errors sometimes when i call today date
+    const year2= NewDate2.getFullYear();
+    const month2 = NewDate.getMonth() + 1;
+    const day2 = NewDate.getDate();
+    const formattedDate2 = `${year2}-${month2.toString().padStart(2, '0')}-${day2.toString().padStart(2, '0')}`;
+   
+    const PriceChange = CalcPrice(formattedDate, typeOfAsset) - CalcPrice(formattedDate2, typeOfAsset); 
+    document.getElementById("PriceChange").innerHTML = PriceChange;
+
+
+}
+async function GetDataLegacy(period,typeOfAsset) {
+   
     var yValuesTemp = [];
     var xValuesTemp = [];
     const dictionaryValues = {};
     console.log(period);
-    const response = await fetch("/Account/GetUserAssets");
+    if (typeOfAsset === null || typeOfAsset === "All") {
+        var response = await fetch("/Account/GetUserAssets");
+    } else
+    {
+        var response = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
+    }
     const AssetDict = await response.json();
 
     switch (period) {
         case "Week":
             for (let i = 0; i < 7; i++) {
-              
+                const today = new Date();
+                const NewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1 - i); // Day - 1 becouse API have errors sometimes when i call today date
+                const year = NewDate.getFullYear();
+                const month = NewDate.getMonth() + 1;
+                const day = NewDate.getDate();
+               
+                const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const Rates = await GetRates(formattedDate);
+                for (const period of Object.keys(AssetDict)) {
+                    let value = 0
+                    for (const [Key, AssetValue] of Object.entries(AssetDict)) {                     
+                        value += (1 / parseFloat(Rates.rates[Key])) * parseFloat(AssetValue);
+                    }
+                    dictionaryValues[formattedDate] = value.toFixed(2);                
+                }
+            }
+            break;
+        case "Month":
+            for (let i = 0; i < 30; i++) {
+                const today = new Date();
+                const NewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1 - i); // Day - 1 becouse API have errors sometimes when i call today date
+                const year = NewDate.getFullYear();
+                const month = NewDate.getMonth() + 1;
+                const day = NewDate.getDate();
+
+                const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const Rates = await GetRates(formattedDate);
+                for (const period of Object.keys(AssetDict)) {
+                    let value = 0
+                    for (const [Key, AssetValue] of Object.entries(AssetDict)) {
+
+                        value += (1 / parseFloat(Rates.rates[Key])) * parseFloat(AssetValue);
+                    }
+                    dictionaryValues[formattedDate] = value.toFixed(2);
+                }
+            }
+            break;
+        case "Year":
+            for (let i = 0; i < 365; i++) {
+
                 const year = today.getFullYear();
                 const month = today.getMonth() + 1;
                 const day = today.getDate() - 1 - i;
                 const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                 const Rates = await GetRates(formattedDate);
-                console.log(i);
                 for (const period of Object.keys(AssetDict)) {
                     let value = 0
                     for (const [Key, AssetValue] of Object.entries(AssetDict)) {
-                        value += parseFloat(Rates[Key]) * parseFloat(AssetValue);
-                    }
-                    dictionaryValues[formattedDate] = value; // it retruns NaN
-                    console.log(value);
-                }
 
-            }
-            break;
-        case "Month":
-            for (let i = 0; i < 30; i++) {
-                let value = 0;
-                const year = today.getFullYear();
-                const month = today.getMonth()+1;
-                const day = today.getDate() - 1 - i;
-                const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                const Rates = await GetRates(formattedDate);
-               
-                for (const Asset of AssetDict) {
-                
+                        value += parseFloat(Rates.rates[Key]) * parseFloat(AssetValue);
+                    }
+                    dictionaryValues[formattedDate] = value.toFixed(2);
                 }
-                dictionaryValues[formattedDate] = value;
-                console.log(value);
-            }
-            break;
-        case "Year":
-            for (let i = 0; i < 365; i++) {
-                let value = 0;
-                const year = today.getFullYear();
-                const month = today.getMonth();
-                const day = today.getDate() - 1 - i;
-                const formattedDate = new Date(year, month, day).toLocaleDateString("en");
-                const Rates = await GetRates(formattedDate);
-                console.log(i);
-                for (const Asset of AssetDict) {
-                    value += Rates[Asset.Key] * Asset.Value;
-                }
-                dictionaryValues[formattedDate] = value;
             }
             break;
         case "TenYears":
             for (let i = 0; i < 3650; i++) {
-                let value = 0;
+
                 const year = today.getFullYear();
-                const month = today.getMonth();
+                const month = today.getMonth() + 1;
                 const day = today.getDate() - 1 - i;
-                const formattedDate = new Date(year, month, day).toLocaleDateString("en");
+                const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                 const Rates = await GetRates(formattedDate);
-                console.log(i);
-                for (const Asset of AssetDict) {
-                    value += Rates[Asset.Key] * Asset.Value;
+                for (const period of Object.keys(AssetDict)) {
+                    let value = 0
+                    for (const [Key, AssetValue] of Object.entries(AssetDict)) {
+                        value += parseFloat(Rates.rates[Key]) * parseFloat(AssetValue);
+                    }
+                    dictionaryValues[formattedDate] = value.toFixed(2);
                 }
-                dictionaryValues[formattedDate] = value;
             }
             break;
         default:
