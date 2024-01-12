@@ -1,8 +1,5 @@
 ﻿
-function test() {
-	console.log("dziala");
-	alert("dziala");
-}
+
 yValues = [];
 xValues = [];
 today = new Date();
@@ -11,7 +8,7 @@ temporaryArrayy = [];
 
 
 document.addEventListener('DOMContentLoaded', function () {
- 
+    GetData(7, "All");
 });
 
 function createChart() {
@@ -27,24 +24,28 @@ function createChart() {
         },
     });
 }
-async function CalcPrice(DateArg, typeOfAsset)
+async function CalcAssetValue(DateArg, typeOfAsset)
 {
   
     const Rates = await GetRates(DateArg);
+    let response;
 
     if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "") {
-        var AssetDict = await fetch("/Account/GetUserAssets");
+        response = await fetch("/Account/GetUserAssets");
     } else {
-        var AssetDict = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
+        response = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
     }
-  
+
+    const AssetDict = await response.json();
+   
     let value = 0
+    
     for (const [Key, AssetValue] of Object.entries(AssetDict))
     {
+      
         value += (1 / parseFloat(Rates.rates[Key])) * parseFloat(AssetValue);
     }
       
-    
     return value.toFixed(2);
 }
 async function GetData(NumberOfDays, typeOfAsset) {
@@ -52,14 +53,14 @@ async function GetData(NumberOfDays, typeOfAsset) {
     var yValuesTemp = [];
     var xValuesTemp = [];
     const dictionaryValues = {};
-
+    let response;
     if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "") {
-        var AssetDict = await fetch("/Account/GetUserAssets");
+        response = await fetch("/Account/GetUserAssets");
     } else {
-        var AssetDict = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
+        response  = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
     }
-
-
+    const AssetDict = await response.json();
+   
     for (let i = 0; i < NumberOfDays; i++) {
         const today = new Date();
         const NewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1 - i); // Day - 1 becouse API have errors sometimes when i call today date
@@ -67,11 +68,15 @@ async function GetData(NumberOfDays, typeOfAsset) {
         const month = NewDate.getMonth() + 1;
         const day = NewDate.getDate();
 
+        
+       
         const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         const Rates = await GetRates(formattedDate);
+        console.log(Rates);
         for (const period of Object.keys(AssetDict)) {
             let value = 0
             for (const [Key, AssetValue] of Object.entries(AssetDict)) {
+                
                 value += (1 / parseFloat(Rates.rates[Key])) * parseFloat(AssetValue);
             }
             dictionaryValues[formattedDate] = value.toFixed(2);
@@ -83,9 +88,9 @@ async function GetData(NumberOfDays, typeOfAsset) {
     }
     xValues = xValuesTemp.reverse();
     yValues = yValuesTemp.reverse();
-
     createChart();
-    // it dont work V
+    
+   
     const today = new Date();
     const NewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1); // Day - 1 becouse API have errors sometimes when i call today date
     const year = NewDate.getFullYear();
@@ -96,12 +101,14 @@ async function GetData(NumberOfDays, typeOfAsset) {
   
     const NewDate2 = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1 - NumberOfDays) // Day - 1 becouse API have errors sometimes when i call today date
     const year2= NewDate2.getFullYear();
-    const month2 = NewDate.getMonth() + 1;
-    const day2 = NewDate.getDate();
+    const month2 = NewDate2.getMonth() + 1;
+    const day2 = NewDate2.getDate();
     const formattedDate2 = `${year2}-${month2.toString().padStart(2, '0')}-${day2.toString().padStart(2, '0')}`;
+    const AssetValue = await CalcAssetValue(formattedDate, typeOfAsset);
+    const AssetValue2 = await CalcAssetValue(formattedDate2, typeOfAsset); 
+    const AssetValueChange = (AssetValue - AssetValue2).toFixed(2);
    
-    const PriceChange = CalcPrice(formattedDate, typeOfAsset) - CalcPrice(formattedDate2, typeOfAsset); 
-    document.getElementById("PriceChange").innerHTML = PriceChange;
+    document.getElementById("AssetValueChange").innerHTML = AssetValueChange;
 
 
 }
