@@ -6,7 +6,7 @@
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
 @inject IApiService _ApiService;
-@inject IUserService UserService;
+@inject IUserService _UserService;
 @inject HttpClient httpclinet;
 @attribute [Authorize]
 
@@ -31,10 +31,20 @@
 <button id="monthButton" onclick='GetData(30,"@selectedType")'>Month</button>
 <button id="monthButton" onclick='GetData(365,"@selectedType")'>Year</button>
 <p id="AssetValueChange"></p>
+
+@if(UserAssetList != null)
+{
+	foreach(var Asset in UserAssetList)
+	{
+		<p>posiadasz @Dict[Asset.Key] w ilosci @Asset.Value</p>
+	}
+}
 	
 
 
 @code{
+	public string PickedType;
+	public Dictionary<string, double> UserAssetList;
 	public AssetModel model = new AssetModel();
 	public string selectedType = string.Empty;
 	public double MetalPrice;
@@ -51,7 +61,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		LoggedUser = await UserService.GetLoggedUser();
+		LoggedUser = await _UserService.GetLoggedUser();
 
 		MetalDict = await _ApiService.GetMetalDict();
 
@@ -66,22 +76,32 @@
 			.ToDictionary(pair => pair.Key, pair => pair.Value);
 		Dict = AllAssetsDict;
 
+		UserAssetList = await _UserService.GetUserAssets();
+
+
 	}
-	
-	private void UpdateSelectedType(ChangeEventArgs Event)
+
+	private async Task UpdateSelectedType(ChangeEventArgs Event)
 	{
 		selectedType = Event.Value?.ToString();
 		if (selectedType == "Currency")
 		{
 			Dict = CurrencyDict;
+			UserAssetList = await _UserService.GetUserAssetsByType("Currency");
+			PickedType = "Currency";
 		}
 		else if (selectedType == "Metal")
 		{
 			Dict = MetalDict;
+			UserAssetList = await _UserService.GetUserAssetsByType("Metal");
+			PickedType = "Metal";
 		}
 		else if (selectedType == "CryptoCurrency")
 		{
 			Dict = CryptoCurrencyDict;
+			UserAssetList = await _UserService.GetUserAssetsByType("CryptoCurrency");
+			PickedType = "CryptoCurrency";
+
 		}
 		else
 		{
