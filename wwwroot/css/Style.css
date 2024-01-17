@@ -1,0 +1,57 @@
+﻿body {
+    background-image: linear-gradient(to top,rgb(0,13,26),rgb(0,64,128));
+    color: white;
+}
+input[type="text"], input[type="password"] {
+    border-radius: 20px;
+    border: none;
+    padding: 5px;
+    margin: 5px;
+    background-color: rgb(0,64,128);
+}
+input[type="text"]:hover, input[type="password"]:hover {
+    background-color: rgb(0,13,26);
+}
+button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    background-color: rgba(0,64,128,1);
+    color:white;
+}
+button:hover {
+    background-color: rgb(0,13,26);
+ }
+.logincontainer {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 50%;
+    
+}
+.validation-summary-errors {
+    border-radius: 20px;
+    width: 20%;
+    padding: 5px;
+    background-color: rgba(0,13,26,0.3);
+    color: white;
+    font-weight: bold
+}
+.Button-Redirect {
+    color: white;
+    text-decoration: none;
+    padding: 15px;
+    background-color: rgba(0,13,26,0.3);
+    float: right;
+    margin:10px;
+    margin-right:50px;
+    border-radius:20px;
+   
+}
+.Button-Redirect:hover {
+    background-color: rgb(0,13,26);
+}
+#RedirectDiv {
+    height: 100px;
+}

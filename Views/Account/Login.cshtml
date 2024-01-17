@@ -1,10 +1,22 @@
 ﻿@model PortfolioApp.Models.LoginModel;
+<html>
+	<head>
+	<title>Login In!</title>
+	<link rel="stylesheet" type="text/css" href="/css/Style.css" />
+	</head>
+	<body>
+
+	<div id="RedirectDiv">
+	@Html.ActionLink("Sign Up", "Register", "Account",null, new { @class = "Button-Redirect" })
+	</div>
 @using (Html.BeginForm("Login", "Account", FormMethod.Post))
 {
 	@Html.ValidationSummary()
 	<div class="logincontainer">
-		<p class="textarealogin">podaj nazwe uzytkownika: <br />@Html.TextBoxFor(x => x.UserName)</p>
-		<p class="textarealogin">podaj haslo: <br />@Html.PasswordFor(x => x.Password)</p>
-		<p><button class="button" type="submit">Zarejestruj</button></p>
+		<p class="textarealogin">Username: <br />@Html.TextBoxFor(x => x.UserName)</p>
+		<p class="textarealogin">Password: <br />@Html.PasswordFor(x => x.Password)</p>
+		<p><button class="button" type="submit">Login In</button></p>
 	</div>
 }
+</body>
+</html>

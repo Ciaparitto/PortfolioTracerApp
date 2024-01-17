@@ -39,18 +39,19 @@ namespace PortfolioApp.Controllers
 		public async Task<IActionResult> Register(RegisterModel data)
 		{
 
-			var NewUser = new UserModel
+          
+            if (ModelState.IsValid)
 			{
-				Email = data.EmailAdress,
-				UserName = data.UserName,
-			};
-			if (ModelState.IsValid)
-			{
-				await _userManager.CreateAsync(NewUser, data.Password);
+                var NewUser = new UserModel
+                {
+                    Email = data.EmailAdress,
+                    UserName = data.UserName,
+                };
+                await _userManager.CreateAsync(NewUser, data.Password);
 				await _signInManager.PasswordSignInAsync(data.Password, data.Password, false, false);
 				return Redirect("https://localhost:7080/");
 			}
-			return View(NewUser);
+			return View(data);
 		}
 		[HttpGet]
 		public ActionResult Login()
