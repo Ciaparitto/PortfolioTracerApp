@@ -10,28 +10,34 @@
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models;
 @using PortfolioApp.Services.Interfaces
+<head>
+	<link rel="stylesheet" type="text/css" href="/css/AddStyle.css" />
+	<title>Add Asset</title>
+</head>
+<body>
+	<div id="form">
 <EditForm Model="@model" OnValidSubmit="@AddAssetfunc">
 	
 	
-	Wybierz rodzaj <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType" >
-		<option value="">Wybierz...</option>
-		<option value="Metal">Metal</option>
-		<option value="Currency">Currency</option>
-		<option value="CryptoCurrency">CryptoCurrency</option>
-	</InputSelect>
-	<p></p>
-	Co chcesz dodać<InputSelect @bind-Value="model.AssetCode">
-		<option value="">Wybierz...</option>
+	Wybierz rodzaj <InputSelect class="SelectClass" @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType" >
+		<option class="optionClass" value="">Wybierz...</option>
+		<option class="optionClass" value="Metal">Metal</option>
+		<option class="optionClass" value="Currency">Currency</option>
+		<option class="optionClass" value="CryptoCurrency">CryptoCurrency</option>
+		</InputSelect>
+	<br />
+		Co chcesz dodać<InputSelect class="SelectClass" @bind-Value="model.AssetCode">
+		<option class="option Class" value="">Wybierz...</option>
 		@if (Dict != null && Dict.Count > 0)
 		{
 			@foreach (var option in Dict)
 			{
-				<option value=@option.Key>@option.Value</option>
+				<option class="optionClass" value=@option.Key>@option.Value</option>
 			}
 		}
 	</InputSelect>
 	    <InputHidden Value="@model.UserId" />
-		<InputHidden Value="@model.User" />\
+		<InputHidden Value="@model.User" />
 		<InputHidden Value="@model.id" />
 	
 	@if (selectedType == "Metal")
@@ -43,10 +49,10 @@
 		<p>Ile sztuk chcesz dodac </p> <InputNumber @bind-Value="model.Ammount" />
 	}	
 	<button type="submit">Dodaj</button>
-	<p>@AddingMessage</p>
+	<p id="Message">@AddingMessage</p>
 </EditForm>
-
-
+	</div>
+</body>
 @code {
 	public Dictionary<string, string> MetalDict;
 	public Dictionary<string, string> CurrencyDict;
