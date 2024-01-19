@@ -2,7 +2,7 @@
     background-image: linear-gradient(to top,rgb(0,13,26),rgb(0,64,128));
     color: white;
 }
-input, input:focus, input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
+input, input:focus, input:-webkit-autofill, input:-webkit-autofill:focus {
     border-radius: 20px;
     padding: 5px;
     margin: 5px;

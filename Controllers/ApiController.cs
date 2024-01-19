@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
@@ -10,13 +11,15 @@ namespace PortfolioApp.Controllers
 	{
 		private readonly HttpClient httpClient;
 		private readonly IUserService _userService;
+		private readonly AppDbContext _Context;
 
 
-		public ApiController(HttpClient httpClient, IUserService userService)
+		public ApiController(HttpClient httpClient, IUserService userService,AppDbContext context)
 		{
 			this.httpClient = httpClient;
 			httpClient.Timeout = TimeSpan.FromSeconds(30);
 			_userService = userService;
+			_Context = context;
 		}
 		public IActionResult Index()
 
@@ -95,6 +98,12 @@ namespace PortfolioApp.Controllers
 
 			}
 		}
-		
+		[IgnoreAntiforgeryToken]
+		public async Task AddAssetToDb(AssetModel model)
+		{
+			await _Context.Assets.AddAsync(model);
+			await _Context.SaveChangesAsync();
+		}
+
 	}
 }

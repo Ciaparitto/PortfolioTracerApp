@@ -8,7 +8,7 @@ select {
     border: none;
     background-color: rgba(0,64,128,1);
 }
-option{
+option {
     background-color: rgba(0,64,128,1);
     border-radius: 20px;
     border: none;
@@ -17,7 +17,8 @@ body {
     background-image: linear-gradient(to top,rgb(0,13,26),rgb(0,64,128));
     color: white;
 }
-input{
+input, input:focus {
+    outline: none;
     background-color: rgba(0,64,128,1);
     border-radius: 20px;
     margin: 10px;
@@ -25,14 +26,28 @@ input{
     padding: 5px;
 }
 input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button {
-        
-        background-color: rgb(0,13,26);
-        border-radius: 5px;
-       //napraw to lol
+        -webkit-appearance: none
+ }
+button {
+    background-color: rgba(0,64,128,1);
+    border-radius: 20px;
+    border: none;
+    padding: 5px 10px;
 }
-    button {
-        background-color: rgba(0,64,128,1);
-        border-radius: 20px;
-        border: none;
-        padding: 5px 10px;
-    }
+::-webkit-scrollbar {
+    width: 12px;
+    background-color: rgba(0,0,0,0);
+}
+
+::-webkit-scrollbar-thumb {
+    width: 12px;
+    background-color: rgb(0,51,102);
+    border-radius: 15px;
+}
+#form {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 70vh;
+}

@@ -5,21 +5,29 @@
 @inject IDbService _DbService;
 @inject IUserService _userService;
 @inject HttpClient _httpClient;
+
+@using Microsoft.AspNetCore.Antiforgery
 @using Microsoft.AspNetCore.Authorization
 @using Newtonsoft.Json
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models;
 @using PortfolioApp.Services.Interfaces
+
 <head>
 	<link rel="stylesheet" type="text/css" href="/css/AddStyle.css" />
 	<title>Add Asset</title>
 </head>
 <body>
 	<div id="form">
-<EditForm Model="@model" OnValidSubmit="@AddAssetfunc">
-	
-	
-	Wybierz rodzaj <InputSelect class="SelectClass" @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType" >
+		<EditForm Model="@model" OnSubmit="@AddAssetfunc">
+		
+		<InputHidden Value="@model.UserId" />
+		<InputHidden Value="@model.User" />
+		<InputHidden Value="@model.id" />
+
+
+
+			Wybierz rodzaj<InputSelect class="SelectClass" @bind-Value="model.TypeOfAsset" @onchange="UpdateSelectedType">
 		<option class="optionClass" value="">Wybierz...</option>
 		<option class="optionClass" value="Metal">Metal</option>
 		<option class="optionClass" value="Currency">Currency</option>
@@ -36,22 +44,25 @@
 			}
 		}
 	</InputSelect>
-	    <InputHidden Value="@model.UserId" />
-		<InputHidden Value="@model.User" />
-		<InputHidden Value="@model.id" />
-	
+	  
+	<br />
 	@if (selectedType == "Metal")
 	{
-		<p>Ile uncji chcesz dodac </p> <InputNumber @bind-Value="model.Ammount" />
+		<laber for="Metal">ile uncji chcesz dodac</laber>
+		<InputNumber id="Metal" min="0"  @bind-Value="model.Ammount" />
 	}
 	else
 	{
-		<p>Ile sztuk chcesz dodac </p> <InputNumber @bind-Value="model.Ammount" />
+		<laber for="Other">ile uncji chcesz dodac</laber>
+		<InputNumber id="Other" min="0" @bind-Value="model.Ammount" />
 	}	
+	<br />
 	<button type="submit">Dodaj</button>
 	<p id="Message">@AddingMessage</p>
+	
 </EditForm>
 	</div>
+	<button @onclick="TEST">Test</button>
 </body>
 @code {
 	public Dictionary<string, string> MetalDict;
@@ -71,30 +82,40 @@
 		CurrencyDict = await _ApiService.GetCurrencyDict();
 
 		CryptoCurrencyDict = await _ApiService.GetCryptoCurrencyDict();
-		
+
 
 		Dictionary<string, string> AllAssetsDict = CurrencyDict
 			.Concat(MetalDict)
 			.Concat(CryptoCurrencyDict)
 			.ToDictionary(pair => pair.Key, pair => pair.Value);
 		Dict = AllAssetsDict;
+		Console.WriteLine("dziala");
 	}
-
-	private void UpdateSelectedType(ChangeEventArgs Event)
+	private async Task TEST()
 	{
+		AddingMessage = "dziala";
+		await Task.CompletedTask;
+	}
+	public async Task UpdateSelectedType(ChangeEventArgs Event)
+	{
+		Console.WriteLine("dziala");
 		selectedType = Event.Value?.ToString();
 		if (selectedType == "Currency")
 		{
 			Dict = CurrencyDict;
+			Console.WriteLine(selectedType);
 		}
 		else if (selectedType == "Metal")
 		{
 			Dict = MetalDict;
+			Console.WriteLine(selectedType);
 		}
 		else if (selectedType == "CryptoCurrency")
 		{
 			Dict = CryptoCurrencyDict;
+			Console.WriteLine(selectedType);
 		}
+		StateHasChanged();
 	}
 
 	public async Task AddAssetfunc()
@@ -104,9 +125,7 @@
 		{
 			try
 			{
-				Console.WriteLine(model.AssetCode);
-				Console.WriteLine(model.TypeOfAsset);
-				Console.WriteLine(model.Ammount);
+			
 				var User = await _userService.GetLoggedUser();
 				model.UserId = User.Id;
 				Console.WriteLine("Przed dodaniem do bazy danych");

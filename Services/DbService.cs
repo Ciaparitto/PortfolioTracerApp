@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 using PortfolioApp.Services.Interfaces;
@@ -19,6 +20,7 @@ namespace PortfolioApp.Services
 			await _Context.Assets.AddAsync(model);
 			await _Context.SaveChangesAsync();
 		}
+
 		public async Task<List<AssetModel>> GetAssetList(string typeOfAsset)
 		{
 			var user = await  _userService.GetLoggedUser();
