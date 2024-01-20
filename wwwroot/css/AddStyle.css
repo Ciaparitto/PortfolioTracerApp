@@ -7,14 +7,18 @@ select {
     margin: 5px;
     border: none;
     background-color: rgba(0,64,128,1);
+    width: 250px;
+    text-align:center;
 }
-option {
+.option {
     background-color: rgba(0,64,128,1);
     border-radius: 20px;
     border: none;
+   
 }
 body {
     background-image: linear-gradient(to top,rgb(0,13,26),rgb(0,64,128));
+ 
     color: white;
 }
 input, input:focus {
@@ -24,6 +28,7 @@ input, input:focus {
     margin: 10px;
     border: none;
     padding: 5px;
+    text-align:center;
 }
 input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button {
         -webkit-appearance: none
@@ -33,6 +38,8 @@ button {
     border-radius: 20px;
     border: none;
     padding: 5px 10px;
+    width:300px;
+
 }
 ::-webkit-scrollbar {
     width: 12px;
@@ -49,5 +56,8 @@ button {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 70vh;
+    height: 90vh;
+}
+#AddMessage {
+   margin:50px;
 }

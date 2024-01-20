@@ -13,57 +13,52 @@
 @using PortfolioApp.Models;
 @using PortfolioApp.Services.Interfaces
 
-<head>
-	<link rel="stylesheet" type="text/css" href="/css/AddStyle.css" />
-	<title>Add Asset</title>
-</head>
-<body>
-	<div id="form">
-		<EditForm Model="@model" OnSubmit="@AddAssetfunc">
-		
-		<InputHidden Value="@model.UserId" />
-		<InputHidden Value="@model.User" />
-		<InputHidden Value="@model.id" />
 
+<HeadContent>
+	<link href="/css/AddStyle.css" rel="stylesheet" />
+</HeadContent>
+<div id="form">
 
+<EditForm Model="@model" OnSubmit="@AddAssetfunc">
+	
+	
+	<p>Wybierz rodzaj <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
+				<option class="option" value="">Wybierz...</option>
+				<option class="option" value="Metal">Metal</option>
+				<option class="option" value="Currency">Currency</option>
+				<option class="option" value="CryptoCurrency">CryptoCurrency</option>
+			</InputSelect>
+		</p>
 
-			Wybierz rodzaj<InputSelect class="SelectClass" @bind-Value="model.TypeOfAsset" @onchange="UpdateSelectedType">
-		<option class="optionClass" value="">Wybierz...</option>
-		<option class="optionClass" value="Metal">Metal</option>
-		<option class="optionClass" value="Currency">Currency</option>
-		<option class="optionClass" value="CryptoCurrency">CryptoCurrency</option>
-		</InputSelect>
-	<br />
-		Co chcesz dodać<InputSelect class="SelectClass" @bind-Value="model.AssetCode">
-		<option class="option Class" value="">Wybierz...</option>
+		<p>Co chcesz dodać<InputSelect @bind-Value="model.AssetCode">
+				<option class="option" value="">Wybierz...</option>
 		@if (Dict != null && Dict.Count > 0)
 		{
 			@foreach (var option in Dict)
 			{
-				<option class="optionClass" value=@option.Key>@option.Value</option>
+						<option class="option" value=@option.Key>@option.Value</option>
 			}
 		}
-	</InputSelect>
+			</InputSelect>
+		</p>
 	  
-	<br />
+	
 	@if (selectedType == "Metal")
 	{
-		<laber for="Metal">ile uncji chcesz dodac</laber>
-		<InputNumber id="Metal" min="0"  @bind-Value="model.Ammount" />
+			<p>Ile uncji chcesz dodac <InputNumber @bind-Value="model.Ammount" /></p>
 	}
 	else
 	{
-		<laber for="Other">ile uncji chcesz dodac</laber>
-		<InputNumber id="Other" min="0" @bind-Value="model.Ammount" />
-	}	
-	<br />
+			<p>Ile sztuk chcesz dodac <InputNumber @bind-Value="model.Ammount" /></p>
+		}	
 	<button type="submit">Dodaj</button>
-	<p id="Message">@AddingMessage</p>
-	
+		
+
 </EditForm>
-	</div>
-	<button @onclick="TEST">Test</button>
-</body>
+	<p id="AddMessage">@AddingMessage</p>
+</div>
+
+
 @code {
 	public Dictionary<string, string> MetalDict;
 	public Dictionary<string, string> CurrencyDict;
@@ -89,31 +84,27 @@
 			.Concat(CryptoCurrencyDict)
 			.ToDictionary(pair => pair.Key, pair => pair.Value);
 		Dict = AllAssetsDict;
-		Console.WriteLine("dziala");
+		
 	}
-	private async Task TEST()
-	{
-		AddingMessage = "dziala";
-		await Task.CompletedTask;
-	}
+
 	public async Task UpdateSelectedType(ChangeEventArgs Event)
 	{
-		Console.WriteLine("dziala");
+		
 		selectedType = Event.Value?.ToString();
 		if (selectedType == "Currency")
 		{
 			Dict = CurrencyDict;
-			Console.WriteLine(selectedType);
+		
 		}
 		else if (selectedType == "Metal")
 		{
 			Dict = MetalDict;
-			Console.WriteLine(selectedType);
+			
 		}
 		else if (selectedType == "CryptoCurrency")
 		{
 			Dict = CryptoCurrencyDict;
-			Console.WriteLine(selectedType);
+			
 		}
 		StateHasChanged();
 	}
