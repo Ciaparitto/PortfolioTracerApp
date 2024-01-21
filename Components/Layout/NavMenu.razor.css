@@ -69,6 +69,7 @@
         align-items: center;
         line-height: 3rem;
         width: 100%;
+     
     }
 
 .nav-item ::deep a.active {
@@ -76,10 +77,10 @@
     color: white;
 }
 
-.nav-item ::deep .nav-link:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
-}
+    .nav-item ::deep .nav-link:hover {
+        background-color: rgba(255,255,255,0.1);
+        color: white;
+    }
 
 .nav-scrollable {
     display: none;

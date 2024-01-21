@@ -10,36 +10,33 @@
 @inject HttpClient httpclinet;
 @attribute [Authorize]
 
+<HeadContent>
+	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
+</HeadContent>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script src="js/HomeScript.js"</script>
-<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+<div id="Chart-container">
+<canvas id="Chart" ></canvas>
+</div>
 <PageTitle>Home</PageTitle>
-
-	sprawdz cene <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
+<div id="buttons">
+	
+		
+	<InputSelect  id="Home-Select" @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
 	<option value="All">Wszytsko </option>
 	<option value="Metal">Metal</option>
 	<option value="Currency">Currency</option>
 	<option value="CryptoCurrency">CryptoCurrency</option>
 </InputSelect>
-@if (LoggedUser != null)
-{
-	<h1>Hello @LoggedUser.UserName</h1>
-}
+	
 
-<button id="dayButton" onclick='GetData(7,"@selectedType")'>Week</button>
-<button id="monthButton" onclick='GetData(30,"@selectedType")'>Month</button>
-<button id="monthButton" onclick='GetData(365,"@selectedType")'>Year</button>
+<button id="dayButton" class="Home-Buttons" onclick='GetData(7,"@selectedType")'>Week</button>
+<button id="monthButton" class="Home-Buttons" onclick='GetData(30,"@selectedType")'>Month</button>
+<button id="yearButton" class="Home-Buttons" onclick='GetData(365,"@selectedType")'>Year</button>
+</div>
 <p id="AssetValueChange"></p>
 
-@if(UserAssetList != null)
-{
-	foreach(var Asset in UserAssetList)
-	{
-		<p>posiadasz @Dict[Asset.Key] w ilosci @Asset.Value</p>
-	}
-}
-	
 
 
 @code{

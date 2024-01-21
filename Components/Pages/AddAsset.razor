@@ -13,25 +13,25 @@
 @using PortfolioApp.Models;
 @using PortfolioApp.Services.Interfaces
 
-
+<PageTitle>Adding Asset</PageTitle>
 <HeadContent>
-	<link href="/css/AddStyle.css" rel="stylesheet" />
+	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
 </HeadContent>
 <div id="form">
 
 <EditForm Model="@model" OnSubmit="@AddAssetfunc">
 	
 	
-	<p>Wybierz rodzaj <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
-				<option class="option" value="">Wybierz...</option>
+	<p>Choose kind <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
+				<option class="option" value="">Choose...</option>
 				<option class="option" value="Metal">Metal</option>
 				<option class="option" value="Currency">Currency</option>
 				<option class="option" value="CryptoCurrency">CryptoCurrency</option>
 			</InputSelect>
 		</p>
 
-		<p>Co chcesz dodać<InputSelect @bind-Value="model.AssetCode">
-				<option class="option" value="">Wybierz...</option>
+		<p>What you want to add<InputSelect @bind-Value="model.AssetCode">
+				<option class="option" value="">Choose...</option>
 		@if (Dict != null && Dict.Count > 0)
 		{
 			@foreach (var option in Dict)
@@ -45,13 +45,13 @@
 	
 	@if (selectedType == "Metal")
 	{
-			<p>Ile uncji chcesz dodac <InputNumber @bind-Value="model.Ammount" /></p>
+			<p>How many ounces do you want to add <InputNumber @bind-Value="model.Ammount" /></p>
 	}
 	else
 	{
-			<p>Ile sztuk chcesz dodac <InputNumber @bind-Value="model.Ammount" /></p>
+			<p>How many units you want to add <InputNumber @bind-Value="model.Ammount" /></p>
 		}	
-	<button type="submit">Dodaj</button>
+	<button type="submit">Add</button>
 		
 
 </EditForm>
@@ -119,19 +119,17 @@
 			
 				var User = await _userService.GetLoggedUser();
 				model.UserId = User.Id;
-				Console.WriteLine("Przed dodaniem do bazy danych");
 				await _DbService.AddAssetToDb(model);
-				Console.WriteLine("po dodaniu");
-				await ChangeMessage($"pomyslnie dodano {Dict[model.AssetCode]} w ilosci {model.Ammount}");
+				await ChangeMessage($"successfully added {Dict[model.AssetCode]} in number {model.Ammount}");
 			}
 			catch (Exception ex)
 			{
-				await ChangeMessage($"blad {ex}");
+				await ChangeMessage($"error {ex}");
 
 			}
 		}else
 		{
-			await ChangeMessage("wprowadz dane");
+			await ChangeMessage("you have to inset data");
 		}
 
 	}

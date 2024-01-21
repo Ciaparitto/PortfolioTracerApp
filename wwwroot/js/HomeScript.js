@@ -12,16 +12,20 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function createChart() {
-    new Chart("myChart", {
+    new Chart("Chart", {
         type: "line",
         data: {
             labels: xValues,
             datasets: [{
-                backgroundColor: "rgba(51, 51, 51,0.2)",
-                borderColor: "rgba(51, 51, 51,0.5)",
+                backgroundColor: "rgb(0,13,26)",
+                borderColor: "rgb(0,64,128)",
                 data: yValues
             }]
         },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
     });
 }
 async function CalcAssetValue(DateArg, typeOfAsset)
