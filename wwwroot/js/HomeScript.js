@@ -111,9 +111,18 @@ async function GetData(NumberOfDays, typeOfAsset) {
     const AssetValue = await CalcAssetValue(formattedDate, typeOfAsset);
     const AssetValue2 = await CalcAssetValue(formattedDate2, typeOfAsset); 
     const AssetValueChange = (AssetValue - AssetValue2).toFixed(2);
-   
-    document.getElementById("AssetValueChange").innerHTML = AssetValueChange;
-
+    if (AssetValueChange > 0)
+    {
+        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} has increased by ${AssetValueChange}`;
+    }
+    if (AssetValueChange < 0)
+    {
+        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} has decreased by ${AssetValueChange}`;
+    }
+    if (AssetValueChange == 0)
+    {
+        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} didnt change value`;
+    }
 
 }
 async function GetDataLegacy(period,typeOfAsset) {
