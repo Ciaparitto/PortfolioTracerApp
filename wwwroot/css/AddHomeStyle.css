@@ -50,15 +50,22 @@ button {
     background-color: rgb(0,51,102);
     border-radius: 15px;
 }
-#form{
+#form {
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     height: 90vh;
 }
+#Assets-Container, #AssetSelect {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+}
 #AddMessage {
-   margin:50px;
+    margin: 50px;
 }
 .Home-Buttons{
  margin-left:5%;
@@ -79,4 +86,7 @@ button {
     font-weight:bold;
     margin:3%;
     text-align:center;
+}
+.Asset {
+    font-weight: bold;
 }

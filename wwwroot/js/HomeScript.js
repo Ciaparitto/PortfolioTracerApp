@@ -1,18 +1,14 @@
 ﻿
-
 yValues = [];
 xValues = [];
 today = new Date();
 temporaryArrayx = [];
 temporaryArrayy = [];
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    GetData(7, "All");
-});
+let myChart;
 
 function createChart() {
-    new Chart("Chart", {
+  
+   myChart = new Chart("Chart", {
         type: "line",
         data: {
             labels: xValues,
@@ -28,9 +24,10 @@ function createChart() {
         }
     });
 }
+
 async function CalcAssetValue(DateArg, typeOfAsset)
 {
-  
+   
     const Rates = await GetRates(DateArg);
     let response;
 
@@ -53,7 +50,13 @@ async function CalcAssetValue(DateArg, typeOfAsset)
     return value.toFixed(2);
 }
 async function GetData(NumberOfDays, typeOfAsset) {
-
+    if (myChart)
+    {
+        myChart.destroy();
+        myChart = null;
+    }
+    document.getElementById("LoadingMessage").innerHTML = "Loading...";
+    document.getElementById("AssetValueChange").innerHTML = "";
     var yValuesTemp = [];
     var xValuesTemp = [];
     const dictionaryValues = {};
@@ -92,6 +95,7 @@ async function GetData(NumberOfDays, typeOfAsset) {
     }
     xValues = xValuesTemp.reverse();
     yValues = yValuesTemp.reverse();
+    document.getElementById("LoadingMessage").innerHTML = null;
     createChart();
     
    

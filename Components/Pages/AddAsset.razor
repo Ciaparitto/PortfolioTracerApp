@@ -22,7 +22,7 @@
 <EditForm Model="@model" OnSubmit="@AddAssetfunc">
 	
 	
-	<p>Choose kind <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
+	<p>Choose type <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
 				<option class="option" value="">Choose...</option>
 				<option class="option" value="Metal">Metal</option>
 				<option class="option" value="Currency">Currency</option>
@@ -67,6 +67,7 @@
 	public string selectedType = string.Empty;
 	public Dictionary<string, string> Dict;
 	public string AddingMessage = "";
+	private Dictionary<string, string> AllAssetsDict;
 
 
 
@@ -79,7 +80,7 @@
 		CryptoCurrencyDict = await _ApiService.GetCryptoCurrencyDict();
 
 
-		Dictionary<string, string> AllAssetsDict = CurrencyDict
+		AllAssetsDict = CurrencyDict
 			.Concat(MetalDict)
 			.Concat(CryptoCurrencyDict)
 			.ToDictionary(pair => pair.Key, pair => pair.Value);
@@ -106,6 +107,7 @@
 			Dict = CryptoCurrencyDict;
 			
 		}
+		
 		StateHasChanged();
 	}
 

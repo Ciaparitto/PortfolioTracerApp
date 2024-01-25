@@ -1,0 +1,70 @@
+﻿@page "/YourAssets"
+@rendermode InteractiveServer
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using PortfolioApp.Components.Services.Interfaces
+@using PortfolioApp.Models
+@using PortfolioApp.Services
+@using PortfolioApp.Services.Interfaces
+@inject IApiService _ApiService;
+@inject IUserService _UserService;
+<PageTitle>Your Assets</PageTitle>
+<HeadContent>
+	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
+</HeadContent>
+<div id="AssetSelect">
+	<p>
+		Choose type <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
+			<option class="option" value="">Choose...</option>
+			<option class="option" value="All">All</option>
+			<option class="option" value="Metal">Metal</option>
+			<option class="option" value="Currency">Currency</option>
+			<option class="option" value="CryptoCurrency">CryptoCurrency</option>
+		</InputSelect>
+	</p>
+</div>
+<div id="Assets-Container">
+	
+	@if(UserAssetList != null)
+	{
+		
+		foreach(var asset in UserAssetList)
+		{
+			<p class="Asset">@($"You own {asset.Value} units of {asset.Key}")</p>
+		}
+	}
+</div>
+@code{
+	public UserModel LoggedUser;
+	private Dictionary<string, double> UserAssetList;
+	public string selectedType = string.Empty;
+	public AssetModel model = new AssetModel();
+	protected override async Task OnInitializedAsync()
+	{
+		LoggedUser = await _UserService.GetLoggedUser();
+		UserAssetList = await _UserService.GetUserAssets();
+	}
+
+	private async Task UpdateSelectedType(ChangeEventArgs Event)
+	{
+		selectedType = Event.Value?.ToString();
+		if (selectedType == "Currency")
+		{
+			UserAssetList = await _UserService.GetUserAssetsByType("Currency");		
+		}
+		else if (selectedType == "Metal")
+		{
+			UserAssetList = await _UserService.GetUserAssetsByType("Metal");		
+		}
+		else if (selectedType == "CryptoCurrency")
+		{
+			UserAssetList = await _UserService.GetUserAssetsByType("CryptoCurrency");		
+		}
+		else if(selectedType == "All")
+		{
+			UserAssetList = await _UserService.GetUserAssets();
+		}
+
+	}
+
+}
