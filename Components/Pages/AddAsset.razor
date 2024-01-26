@@ -1,7 +1,6 @@
 ﻿@page "/AddAsset"
 @rendermode InteractiveServer
 @attribute [Authorize]
-@inject IApiService _ApiService;
 @inject IDbService _DbService;
 @inject IUserService _userService;
 @inject HttpClient _httpClient;
@@ -22,40 +21,42 @@
 <EditForm Model="@model" OnSubmit="@AddAssetfunc">
 	
 	
-	<p>Choose type <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
+	<p>Choose type
+		<InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
 				<option class="option" value="">Choose...</option>
 				<option class="option" value="Metal">Metal</option>
 				<option class="option" value="Currency">Currency</option>
 				<option class="option" value="CryptoCurrency">CryptoCurrency</option>
-			</InputSelect>
-		</p>
+		</InputSelect>
+	</p>
 
-		<p>What you want to add<InputSelect @bind-Value="model.AssetCode">
-				<option class="option" value="">Choose...</option>
-		@if (Dict != null && Dict.Count > 0)
+	<p>What you want to add<InputSelect @bind-Value="model.AssetCode">
+			<option class="option" value="">Choose...</option>
+	@if (Dict != null && Dict.Count > 0)
+	{
+		@foreach (var option in Dict)
 		{
-			@foreach (var option in Dict)
-			{
-						<option class="option" value=@option.Key>@option.Value</option>
-			}
+					<option class="option" value=@option.Key>@option.Value</option>
 		}
-			</InputSelect>
-		</p>
+	}
+		</InputSelect>
+	</p>
 	  
 	
 	@if (selectedType == "Metal")
 	{
-			<p>How many ounces do you want to add <InputNumber @bind-Value="model.Ammount" /></p>
+		<p>How many ounces do you want to add <InputNumber @bind-Value="model.Ammount" /></p>
 	}
 	else
 	{
-			<p>How many units you want to add <InputNumber @bind-Value="model.Ammount" /></p>
-		}	
+		<p>How many units you want to add <InputNumber @bind-Value="model.Ammount" /></p>
+	}	
+
 	<button type="submit">Add</button>
 		
 
 </EditForm>
-	<p id="AddMessage">@AddingMessage</p>
+<p id="AddMessage">@AddingMessage</p>
 </div>
 
 
@@ -73,11 +74,11 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		MetalDict = await _ApiService.GetMetalDict();
+		MetalDict = await _DbService.GetMetalDict();
 
-		CurrencyDict = await _ApiService.GetCurrencyDict();
+		CurrencyDict = await _DbService.GetCurrencyDict();
 
-		CryptoCurrencyDict = await _ApiService.GetCryptoCurrencyDict();
+		CryptoCurrencyDict = await _DbService.GetCryptoCurrencyDict();
 
 
 		AllAssetsDict = CurrencyDict
@@ -131,7 +132,7 @@
 			}
 		}else
 		{
-			await ChangeMessage("you have to inset data");
+			await ChangeMessage("you have to insert data");
 		}
 
 	}

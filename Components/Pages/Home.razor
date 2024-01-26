@@ -5,37 +5,37 @@
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
-@inject IApiService _ApiService;
+@inject IDbService _DbService;
 @inject IUserService _UserService;
 @inject HttpClient httpclinet;
 @attribute [Authorize]
-
+<PageTitle>Home</PageTitle>
 <HeadContent>
 	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
 </HeadContent>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-<script src="js/HomeScript.js"</script>
+<script src="js/HomeScript.js"></script>
 <div id="Chart-container">
-<div id="LoadingMessage"></div>
-<canvas id="Chart" ></canvas>
+	<div id="LoadingMessage"></div>
+	<canvas id="Chart" ></canvas>
 </div>
-<PageTitle>Home</PageTitle>
+
 <div id="buttons">
 	
 		
 	<InputSelect  id="Home-Select" @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
-	<option value="All">All</option>
-	<option value="Metal">Metal</option>
-	<option value="Currency">Currency</option>
-	<option value="CryptoCurrency">CryptoCurrency</option>
-</InputSelect>
+		<option value="All">All</option>
+		<option value="Metal">Metal</option>
+		<option value="Currency">Currency</option>
+		<option value="CryptoCurrency">CryptoCurrency</option>
+	</InputSelect>
 	
 
-<button id="weekButton" class="Home-Buttons" onclick='GetData(7,"@selectedType")'>Week</button>
-<button id="monthButton" class="Home-Buttons" onclick='GetData(30,"@selectedType")'>Month</button>
-<button id="yearButton" class="Home-Buttons" onclick='GetData(365,"@selectedType")'>Year</button>
-</div>
+	<button id="weekButton" class="Home-Buttons" onclick='GetData(7,"@selectedType")'>Week</button>
+	<button id="monthButton" class="Home-Buttons" onclick='GetData(30,"@selectedType")'>Month</button>
+	<button id="yearButton" class="Home-Buttons" onclick='GetData(365,"@selectedType")'>Year</button>
+	</div>
 <p id="AssetValueChange"></p>
 
 
@@ -62,11 +62,11 @@
 	{
 		LoggedUser = await _UserService.GetLoggedUser();
 
-		MetalDict = await _ApiService.GetMetalDict();
+		MetalDict = await _DbService.GetMetalDict();
 
-		CurrencyDict = await _ApiService.GetCurrencyDict();
+		CurrencyDict = await _DbService.GetCurrencyDict();
 
-		CryptoCurrencyDict = await _ApiService.GetCryptoCurrencyDict();
+		CryptoCurrencyDict = await _DbService.GetCryptoCurrencyDict();
 
 
 		AllAssetsDict = CurrencyDict

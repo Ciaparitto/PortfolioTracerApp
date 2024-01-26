@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
-using System.Security.Claims;
-using PortfolioApp.Components.Services.Interfaces;
-using PortfolioApp.Models;
-using PortfolioApp.Services.Interfaces;
-using static System.Net.WebRequestMethods;
-using System.ComponentModel.DataAnnotations;
+
 namespace PortfolioApp.Components.Services
 {
 	public class UserService : IUserService
