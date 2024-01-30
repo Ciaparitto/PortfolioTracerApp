@@ -24,7 +24,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddAntiforgery(o => o.HeaderName = "X-CSRF-TOKEN");
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-builder.Services.AddScoped<IApiService, ApiService>();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDbService, DbService>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["BaseUrl"]) });

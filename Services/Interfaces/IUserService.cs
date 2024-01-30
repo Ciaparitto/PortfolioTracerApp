@@ -9,5 +9,6 @@ namespace PortfolioApp.Components.Services.Interfaces
 		public Task<Dictionary<string, double>> GetUserAssetsByType(string Type);
 		public Task<Dictionary<string, double>> GetUserAssets();
 		public Task<double> GetAmmountOfAsset(string AssetCode, string typeOfAsset);
+	
 	}
 }

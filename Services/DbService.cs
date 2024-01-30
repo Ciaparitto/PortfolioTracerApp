@@ -8,10 +8,12 @@ namespace PortfolioApp.Services
 {
 	public class DbService : IDbService
 	{
-		private readonly AppDbContext _Context;		
+		private readonly AppDbContext _Context;
+		private readonly IUserService _userService;
 		public DbService(AppDbContext context,IUserService userService) 
 		{
 			_Context = context;
+			_userService = userService;
 
 		}
 		public async Task AddAssetToDb(AssetModel model)
@@ -95,6 +97,17 @@ namespace PortfolioApp.Services
 			{ "SNX", "Synthetix" },
 			};
 			return CryptoDict;
+		}
+		public async Task<List<TransactionModel>> GetUserTransactions()
+		{
+			var USER = await _userService.GetLoggedUser();
+			var List = await _Context.Transactions.Where(x => x.UserId == USER.Id).ToListAsync();
+			return List;
+		}
+		public async Task AddTransactionToDb(TransactionModel model)
+		{
+			await _Context.Transactions.AddAsync(model);
+			await _Context.SaveChangesAsync();
 		}
 
 	}

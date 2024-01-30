@@ -1,0 +1,164 @@
+﻿@page "/YourTransactions"
+@using PortfolioApp.Components.Services.Interfaces
+@using PortfolioApp.Models
+@using PortfolioApp.Services.Interfaces
+@rendermode InteractiveServer
+@inject IDbService _DbService
+@inject IUserService _userService;
+<PageTitle>Your Transactions History</PageTitle>
+<HeadContent>
+	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
+</HeadContent> 
+<div id="AddingTransaction">
+	<EditForm Model="@model" OnSubmit="@AddTransactionfunc">
+		<p>
+			What do you want
+			<InputSelect @bind-Value="model.TransactionType">
+				<option class="option" value="Deposit">Deposit</option>
+				<option class="option" value="Withdraw">Withdraw</option>				
+			</InputSelect>
+		</p>
+		<p>
+			Choose type
+			<InputSelect @bind-Value="ChoosedAssetType" @oninput="UpdateSelectedType">
+				<option class="option" value="">Choose...</option>
+				<option class="option" value="Metal">Metal</option>
+				<option class="option" value="Currency">Currency</option>
+				<option class="option" value="CryptoCurrency">CryptoCurrency</option>
+			</InputSelect>
+		</p>
+		<p>
+			Choose Asset<InputSelect @bind-Value="model.AssetCode">
+				<option class="option" value="">Choose...</option>
+				@if (Dict != null && Dict.Count > 0)
+				{
+					@foreach (var option in Dict)
+					{
+						<option class="option" value=@option.Key>@option.Value</option>
+					}
+				}
+			</InputSelect>
+		</p>
+		@if (model.TransactionType == "Withdraw")
+		{
+			@if (selectedType == "Metal")
+			{
+				<p>How many ounces do you want to Withdraw <InputNumber @bind-Value="model.Ammount" /></p>
+			}
+			else
+			{
+				<p>How many units you want to Withdraw <InputNumber @bind-Value="model.Ammount" /></p>
+			}
+		}
+		else
+		{
+			@if (selectedType == "Metal")
+			{
+				<p>How many ounces do you want to Deposit <InputNumber @bind-Value="model.Ammount" /></p>
+			}
+			else
+			{
+				<p>How many units you want to Deposit <InputNumber @bind-Value="model.Ammount" /></p>
+			}
+		}
+	</EditForm>
+</div>
+<div id="Transaction-container">
+	@if(TransactionsList !=null && TransactionsList.Count > 0)
+	{
+		foreach(var Transaction in TransactionsList)
+		{
+			<div class="Transaction">
+				<div class="transaction-property">@Transaction.TransactionType</div>
+				<div class="transaction-property">@Transaction.date</div>
+				<div class="transaction-property">@Transaction.AssetCode</div>
+				<div class="transaction-property">@Transaction.Ammount</div>
+				<div class="transaction-property">@Transaction.TransactionId</div>
+			</div>
+		}
+	}
+</div>
+@code{
+	private string ChoosedAssetType;
+	private string InfoMessage;
+	private Dictionary<string, string> MetalDict;
+	private Dictionary<string, string> CurrencyDict;
+	private Dictionary<string, string> CryptoCurrencyDict;
+	private Dictionary<string, string> AllAssetsDict;
+	public Dictionary<string, string> Dict;
+	private string selectedType = string.Empty;
+	public TransactionModel model;
+	private List<TransactionModel> TransactionsList;
+	protected override async Task OnInitializedAsync()
+	{
+		TransactionsList = await _DbService.GetUserTransactions();
+
+		MetalDict = await _DbService.GetMetalDict();
+
+		CurrencyDict = await _DbService.GetCurrencyDict();
+
+		CryptoCurrencyDict = await _DbService.GetCryptoCurrencyDict();
+
+
+		AllAssetsDict = CurrencyDict
+			.Concat(MetalDict)
+			.Concat(CryptoCurrencyDict)
+			.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+		Dict = AllAssetsDict;
+
+	}
+	public async Task AddTransactionfunc()
+	{
+		if (!string.IsNullOrEmpty(model.AssetCode) && !string.IsNullOrEmpty(model.TransactionType) && model.Ammount != 0)
+		{
+			try
+			{
+
+				var User = await _userService.GetLoggedUser();
+				model.UserId = User.Id;
+				await _DbService.AddTransactionToDb(model);
+				await ChangeMessage($"successfully added {Dict[model.AssetCode]} in number {model.Ammount}");
+			}
+			catch (Exception ex)
+			{
+				await ChangeMessage($"error {ex}");
+
+			}
+		}
+		else
+		{
+			await ChangeMessage("you have to insert data");
+		}
+	}
+	public async Task UpdateSelectedType(ChangeEventArgs Event)
+	{
+		
+		selectedType = Event.Value?.ToString();
+		if (selectedType == "Currency")
+		{
+			Dict = CurrencyDict;
+		
+		}
+		else if (selectedType == "Metal")
+		{
+			Dict = MetalDict;
+			
+		}
+		else if (selectedType == "CryptoCurrency")
+		{
+			Dict = CryptoCurrencyDict;
+			
+		}
+		
+		StateHasChanged();
+	}
+	public async Task ChangeMessage(string Message)
+	{
+		InfoMessage = Message;
+		StateHasChanged();
+		await Task.Delay(5000);
+		StateHasChanged();
+		InfoMessage = "";
+	}
+}
