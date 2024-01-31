@@ -90,3 +90,16 @@ button {
 .Asset {
     font-weight: bold;
 }
+
+#Transaction-container {
+    background-color: rgba(0,64,128,1);
+    padding: 10px;
+    border-radius: 20px;
+}
+.TransactionTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+.TransactionTable tr, .TransactionTable td{
+ text-align:center;
+}

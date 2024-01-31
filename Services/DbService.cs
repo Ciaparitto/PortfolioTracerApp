@@ -103,6 +103,8 @@ namespace PortfolioApp.Services
 			var USER = await _userService.GetLoggedUser();
 			var List = await _Context.Transactions.Where(x => x.UserId == USER.Id).ToListAsync();
 			return List;
+		
+			
 		}
 		public async Task AddTransactionToDb(TransactionModel model)
 		{

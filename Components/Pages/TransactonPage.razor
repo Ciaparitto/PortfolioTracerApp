@@ -39,43 +39,44 @@
 				}
 			</InputSelect>
 		</p>
-		@if (model.TransactionType == "Withdraw")
+		
+		@if (selectedType == "Metal")
 		{
-			@if (selectedType == "Metal")
-			{
-				<p>How many ounces do you want to Withdraw <InputNumber @bind-Value="model.Ammount" /></p>
-			}
-			else
-			{
-				<p>How many units you want to Withdraw <InputNumber @bind-Value="model.Ammount" /></p>
-			}
+			<p>How many ounces do you want to @model.TransactionType <InputNumber @bind-Value="model.Ammount" /></p>
 		}
 		else
 		{
-			@if (selectedType == "Metal")
-			{
-				<p>How many ounces do you want to Deposit <InputNumber @bind-Value="model.Ammount" /></p>
-			}
-			else
-			{
-				<p>How many units you want to Deposit <InputNumber @bind-Value="model.Ammount" /></p>
-			}
+			<p>How many units you want to  @model.TransactionType<InputNumber @bind-Value="model.Ammount" /></p>
 		}
+		
+		<button type="submit">@model.TransactionType</button>
 	</EditForm>
+	<p>@InfoMessage</p>
 </div>
 <div id="Transaction-container">
 	@if(TransactionsList !=null && TransactionsList.Count > 0)
 	{
-		foreach(var Transaction in TransactionsList)
+		<table class="TransactionTable">
+			<tr>
+				<td>Transaction Type</td>
+				<td>Date</td>
+				<td>Asset Code</td>
+				<td>Ammont</td>
+				<td>Transaction ID</td>
+			</tr>
+		@foreach(var Transaction in TransactionsList)
 		{
-			<div class="Transaction">
-				<div class="transaction-property">@Transaction.TransactionType</div>
-				<div class="transaction-property">@Transaction.date</div>
-				<div class="transaction-property">@Transaction.AssetCode</div>
-				<div class="transaction-property">@Transaction.Ammount</div>
-				<div class="transaction-property">@Transaction.TransactionId</div>
-			</div>
+			<tr>
+					<td>@Transaction.TransactionType</td>
+					<td>@Transaction.date</td>
+					<td>@Transaction.AssetCode</td>
+					<td>@Transaction.Ammount</td>
+					<td>@Transaction.Id</td>
+			</tr>
+
+		
 		}
+		</table>
 	}
 </div>
 @code{
@@ -87,10 +88,13 @@
 	private Dictionary<string, string> AllAssetsDict;
 	public Dictionary<string, string> Dict;
 	private string selectedType = string.Empty;
-	public TransactionModel model;
+	public TransactionModel model = new TransactionModel();
 	private List<TransactionModel> TransactionsList;
 	protected override async Task OnInitializedAsync()
 	{
+
+		model.TransactionType = "Deposit";
+
 		TransactionsList = await _DbService.GetUserTransactions();
 
 		MetalDict = await _DbService.GetMetalDict();
@@ -110,11 +114,15 @@
 	}
 	public async Task AddTransactionfunc()
 	{
+	
 		if (!string.IsNullOrEmpty(model.AssetCode) && !string.IsNullOrEmpty(model.TransactionType) && model.Ammount != 0)
 		{
+			
 			try
 			{
-
+				Console.WriteLine(model.AssetCode);
+				Console.WriteLine(model.TransactionType);
+				Console.WriteLine(model.Ammount);
 				var User = await _userService.GetLoggedUser();
 				model.UserId = User.Id;
 				await _DbService.AddTransactionToDb(model);
@@ -129,6 +137,7 @@
 		else
 		{
 			await ChangeMessage("you have to insert data");
+			
 		}
 	}
 	public async Task UpdateSelectedType(ChangeEventArgs Event)
