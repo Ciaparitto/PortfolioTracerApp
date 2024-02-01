@@ -40,12 +40,33 @@ namespace PortfolioApp.Components.Services
 				if (User != null)
 				{
 					
-					var AssetList = _Context.Assets.Where(x => x.UserId == User.Id).ToList();
+					var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id).ToList();
 					foreach (var Asset in AssetList)
 					{
-						Dict[Asset.AssetCode] = Asset.Ammount;
-					}
+						if (!Dict.ContainsKey(Asset.AssetCode) || Dict[Asset.AssetCode] == null)
+						{
+							Dict[Asset.AssetCode] = Asset.Ammount;
+						}
+						else
+						{
+							if (Asset.TransactionType == "Deposit")
+							{
+								Dict[Asset.AssetCode] += Asset.Ammount;
+							}
+							else
+							{
+								Dict[Asset.AssetCode] -= Asset.Ammount;
+							}
+						}
+
+						if (Dict[Asset.AssetCode] <= 0)
+						{
+						Dict.Remove(Asset.AssetCode);
+						}
+					
 				}
+			}
+				
 			return Dict;
 		
 			
@@ -58,11 +79,30 @@ namespace PortfolioApp.Components.Services
 				var Dict = new Dictionary<string, double>();
 				if (User != null)
 				{
-					var AssetList = _Context.Assets.Where(x => x.UserId == User.Id && x.TypeOfAsset == Type).ToList();
+					var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id && x.TypeOfAsset == Type).ToList();
 					
 					foreach (var Asset in AssetList)
 					{
-						Dict[Asset.AssetCode] = Asset.Ammount;
+						if (!Dict.ContainsKey(Asset.AssetCode) || Dict[Asset.AssetCode] == null)
+						{
+							Dict[Asset.AssetCode] = Asset.Ammount;
+						}
+						else
+						{
+							if (Asset.TransactionType == "Deposit")
+							{
+								Dict[Asset.AssetCode] += Asset.Ammount;
+							}
+							else
+							{
+								Dict[Asset.AssetCode] -= Asset.Ammount;
+							}
+						}
+
+						if (Dict[Asset.AssetCode] <= 0)
+						{
+							Dict.Remove(Asset.AssetCode);
+						}
 					}
 				}
 				return Dict;
@@ -70,15 +110,23 @@ namespace PortfolioApp.Components.Services
 		}
 		public async Task<double> GetAmmountOfAsset(string AssetCode, string typeOfAsset)
 		{
-			var User = GetLoggedUser().Result;
+			var User = await GetLoggedUser();
 			if (User != null)
 			{
 
-				var AssetList = _Context.Assets.Where(x => x.AssetCode == AssetCode && x.TypeOfAsset == typeOfAsset && x.UserId == User.Id).ToList();
+				var AssetList = _Context.Transactions.Where(x => x.AssetCode == AssetCode && x.TypeOfAsset == typeOfAsset && x.UserId == User.Id).ToList();
 				double Ammount = 0;
 				foreach (var Asset in AssetList)
 				{
-					Ammount += Asset.Ammount;
+					if(Asset.TransactionType == "Deposit")
+					{
+						Ammount += Asset.Ammount;
+					}
+					else
+					{
+						Ammount -= Asset.Ammount;
+					}
+					
 				}
 				return Ammount;
 			}

@@ -20,7 +20,7 @@
 		</p>
 		<p>
 			Choose type
-			<InputSelect @bind-Value="ChoosedAssetType" @oninput="UpdateSelectedType">
+			<InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
 				<option class="option" value="">Choose...</option>
 				<option class="option" value="Metal">Metal</option>
 				<option class="option" value="Currency">Currency</option>
@@ -53,9 +53,10 @@
 	</EditForm>
 	<p>@InfoMessage</p>
 </div>
-<div id="Transaction-container">
+
 	@if(TransactionsList !=null && TransactionsList.Count > 0)
 	{
+	<div id="Transaction-container">
 		<table class="TransactionTable">
 			<tr>
 				<td>Transaction Type</td>
@@ -77,8 +78,9 @@
 		
 		}
 		</table>
+	</div>
 	}
-</div>
+
 @code{
 	private string ChoosedAssetType;
 	private string InfoMessage;
@@ -96,7 +98,7 @@
 		model.TransactionType = "Deposit";
 
 		TransactionsList = await _DbService.GetUserTransactions();
-
+		TransactionsList.Reverse();
 		MetalDict = await _DbService.GetMetalDict();
 
 		CurrencyDict = await _DbService.GetCurrencyDict();
@@ -114,26 +116,30 @@
 	}
 	public async Task AddTransactionfunc()
 	{
-	
+
 		if (!string.IsNullOrEmpty(model.AssetCode) && !string.IsNullOrEmpty(model.TransactionType) && model.Ammount != 0)
 		{
-			
-			try
+			var UserAssetAmmount = await _userService.GetAmmountOfAsset(model.AssetCode, model.TypeOfAsset);
+			if (model.TransactionType == "Withdraw" && model.Ammount > UserAssetAmmount)
 			{
-				Console.WriteLine(model.AssetCode);
-				Console.WriteLine(model.TransactionType);
-				Console.WriteLine(model.Ammount);
-				var User = await _userService.GetLoggedUser();
-				model.UserId = User.Id;
-				await _DbService.AddTransactionToDb(model);
-				await ChangeMessage($"successfully added {Dict[model.AssetCode]} in number {model.Ammount}");
+				await ChangeMessage($"You dont have {model.Ammount} {model.AssetCode}");
 			}
-			catch (Exception ex)
-			{
-				await ChangeMessage($"error {ex}");
+			else
+			{				
+				try
+				{
+					var User = await _userService.GetLoggedUser();
+					model.UserId = User.Id;
+					await _DbService.AddTransactionToDb(model);
+					await ChangeMessage($"successfully {model.TransactionType} {Dict[model.AssetCode]} in number {model.Ammount}");
+				}
+				catch (Exception ex)
+				{
+					await ChangeMessage($"error {ex}");
 
+				}
 			}
-		}
+		}	
 		else
 		{
 			await ChangeMessage("you have to insert data");

@@ -114,34 +114,86 @@ namespace PortfolioApp.Controllers
 			}
 			return 0;
 		}
-		public async Task<Dictionary<string,double>> GetUserAssets()
+		public async Task<Dictionary<string, double>> GetUserAssets()
 		{
+
 			var User = await GetLoggedUser();
-			var Dict = new Dictionary<string,double>();
-			if (User != null)
-			{
-				var AssetList = _Context.Assets.Where(x => x.UserId == User.Id).ToList();
-				foreach (var Asset in AssetList)
-				{
-					Dict[Asset.AssetCode] = Asset.Ammount;
-				}				
-			}
-			return Dict;
-		}
-		public async Task<Dictionary<string, double>> GetUserAssetsByType(string Type)
-		{
-			var User = await GetLoggedUser();
+
+
 			var Dict = new Dictionary<string, double>();
 			if (User != null)
 			{
-				var AssetList = _Context.Assets.Where(x => x.UserId == User.Id && x.TypeOfAsset == Type).ToList();
+
+				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id).ToList();
 				foreach (var Asset in AssetList)
 				{
-					Dict[Asset.AssetCode] = Asset.Ammount;
+					if (!Dict.ContainsKey(Asset.AssetCode) || Dict[Asset.AssetCode] == null)
+					{
+						Dict[Asset.AssetCode] = Asset.Ammount;
+					}
+					else
+					{
+						if (Asset.TransactionType == "Deposit")
+						{
+							Dict[Asset.AssetCode] += Asset.Ammount;
+						}
+						else
+						{
+							Dict[Asset.AssetCode] -= Asset.Ammount;
+						}
+					}
+
+					if (Dict[Asset.AssetCode] <= 0)
+					{
+						Dict.Remove(Asset.AssetCode);
+					}
+
+				}
+			}
+
+			return Dict;
+
+
+		}
+		public async Task<Dictionary<string, double>> GetUserAssetsByType(string Type)
+		{
+
+			var User = await GetLoggedUser();
+
+			var Dict = new Dictionary<string, double>();
+			if (User != null)
+			{
+				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id && x.TypeOfAsset == Type).ToList();
+
+				foreach (var Asset in AssetList)
+				{
+					if (!Dict.ContainsKey(Asset.AssetCode) || Dict[Asset.AssetCode] == null)
+					{
+						Dict[Asset.AssetCode] = Asset.Ammount;
+					}
+					else
+					{
+						if (Asset.TransactionType == "Deposit")
+						{
+							Dict[Asset.AssetCode] += Asset.Ammount;
+						}
+						else
+						{
+							Dict[Asset.AssetCode] -= Asset.Ammount;
+						}
+					}
+
+					if (Dict[Asset.AssetCode] <= 0)
+					{
+						Dict.Remove(Asset.AssetCode);
+					}
 				}
 			}
 			return Dict;
+
 		}
-		
+
+
+
 	}
 }
