@@ -1,0 +1,28 @@
+﻿@page "/YourAccount"
+@inject IUserService _UserService;
+@using PortfolioApp.Components.Services.Interfaces
+@using PortfolioApp.Models
+@if(LoggedUser != null)
+{
+	<div id="UserData-Container">
+		<p class="UserData" id="UserName">Your account name: @LoggedUser.UserName</p>
+		<form action="/Account/Logout" method="post">
+			<button type="submit">LogOut</button>
+		</form>
+		<form action="/Account/ChangePassword" method="post">
+			<span> Current password<input name="currentPassword" type="password" /></span>
+			<span> New password<input name="password" type="password" /></span>
+			<button type="submit">Change Password</button>
+
+		</form>
+	</div>
+}
+@code{
+	public UserModel LoggedUser;
+	protected override async Task OnInitializedAsync()
+	{
+		LoggedUser = await _UserService.GetLoggedUser();
+		
+	}
+	
+}

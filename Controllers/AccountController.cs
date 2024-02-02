@@ -192,6 +192,26 @@ namespace PortfolioApp.Controllers
 			return Dict;
 
 		}
+		[HttpPost]
+		public async Task<IActionResult> ChangePassword(string currentPassword, string password)
+		{
+		
+			var USER = GetLoggedUser().Result;
+			if (User.Identity.IsAuthenticated)
+			{
+				var result = await _userManager.ChangePasswordAsync(USER, currentPassword, password);
+				if (result.Succeeded)
+				{
+					await _Context.SaveChangesAsync();
+					await Logout();
+				}
+				
+				
+			}
+			return Redirect("/YourAccount");
+
+			
+		}
 
 
 
