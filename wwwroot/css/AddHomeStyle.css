@@ -50,19 +50,18 @@ button {
     background-color: rgb(0,51,102);
     border-radius: 15px;
 }
-#form {
+
+#Assets-Container, #form, #AssetSelect, #UserData-Container {
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+#form {
     height: 90vh;
 }
-#Assets-Container, #AssetSelect {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    
+#UserData-Container{
+    height:80vh;
 }
 #AddMessage {
     margin: 50px;
@@ -102,4 +101,11 @@ button {
 }
 .TransactionTable tr, .TransactionTable td{
  text-align:center;
+}
+#UserName {
+    font-size: 200%;
+}
+#ChangePassword-button, #LogOut-buttton {
+ 
+    margin: 5px;
 }

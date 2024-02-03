@@ -205,15 +205,46 @@ namespace PortfolioApp.Controllers
 					await _Context.SaveChangesAsync();
 					await Logout();
 				}
-				
-				
+				else
+				{
+					TempData["ErrorMessage"] = "You entered the wrong password";
+				}
 			}
-			return Redirect("/YourAccount");
+			return Redirect("/YourAccount");			
+		}
+		[HttpPost]
+		public async Task<IActionResult> ChangeUsername(string currentPassword, string newUsername)
+		{
 
 			
+			if (User.Identity.IsAuthenticated)
+			{
+				var USER = GetLoggedUser().Result;
+				var passwordCheck = await _userManager.CheckPasswordAsync(USER, currentPassword);
+				{
+					if(passwordCheck)
+					{
+						var result = await _userManager.SetUserNameAsync(USER, newUsername);
+						if(result.Succeeded)
+						{
+							await _Context.SaveChangesAsync();
+							return Redirect("/");
+						}
+					
+					}
+				}
+				
+
+			}
+			return Redirect("/YourAccount");
 		}
-
-
-
+		[HttpGet]
+		[Route("/Account")]
+		public async Task<IActionResult> Account()
+		{
+			var USER = GetLoggedUser().Result;
+			ViewBag.UserName = USER.UserName;
+			return View();
+		}
 	}
 }
