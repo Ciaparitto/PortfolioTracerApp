@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using Microsoft.EntityFrameworkCore;
@@ -205,19 +206,17 @@ namespace PortfolioApp.Controllers
 					await _Context.SaveChangesAsync();
 					await Logout();
 				}
-				else
-				{
-					TempData["ErrorMessage"] = "You entered the wrong password";
-				}
+				
 			}
-			return Redirect("/YourAccount");			
+			return Ok();
+
 		}
 		[HttpPost]
 		public async Task<IActionResult> ChangeUsername(string currentPassword, string newUsername)
 		{
 
 			
-			if (User.Identity.IsAuthenticated)
+			if (User.Identity.IsAuthenticated && !string.IsNullOrWhiteSpace(currentPassword) && !string.IsNullOrWhiteSpace(newUsername))
 			{
 				var USER = GetLoggedUser().Result;
 				var passwordCheck = await _userManager.CheckPasswordAsync(USER, currentPassword);
@@ -240,11 +239,25 @@ namespace PortfolioApp.Controllers
 		}
 		[HttpGet]
 		[Route("/Account")]
+		[Authorize]
 		public async Task<IActionResult> Account()
 		{
+			
 			var USER = GetLoggedUser().Result;
 			ViewBag.UserName = USER.UserName;
 			return View();
+		}
+		public async Task<bool> CheckPassword(string password)
+		{
+			var USER = await GetLoggedUser();
+			var passwordCheck = await _userManager.CheckPasswordAsync(USER, password);
+			{
+				if (passwordCheck)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

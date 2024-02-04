@@ -12,15 +12,74 @@
 	<br />
 	<h2><strong>Change Password</strong></h2>
 	<br />
-	<form action="/Account/ChangePassword" method="post">
-		<span> Current password<input name="currentPassword" type="password" /></span>
+	@using (Html.BeginForm("ChangePassword", "Account", FormMethod.Post, new { id = "changePasswordForm" }))
+	{
+
+		<span> Current password<input id="currentPassword" name="currentPassword" type="password" /></span>
 		<br />
-		<span> New password<input name="password" type="password" /></span>
+		<span> New password<input id="password" name="password" type="password" /></span>
 		<br />
 		<button id="ChangePassword-button" type="submit">Change Password</button>
+		<p id="errormessage"></p>
+	}
 
-	</form>
+	
 	<form action="/Account/Logout" method="post">
-		<button id="LogOut-buttton" type="submit">LogOut</button>
+		<button id="LogOut-buttton" type="submit" >LogOut</button>
 	</form>
 </div>
+<script>
+	document.addEventListener('DOMContentLoaded', (event) => {
+		document.getElementById("changePasswordForm").addEventListener('submit', Validation);
+	});
+	async function CheckPassword(password) {
+		const response = await fetch(`/Account/CheckPassword`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ password: password })
+		});
+
+		if (!response.ok) {
+			throw new Error(`Server responded with status ${response.status}`);
+		}
+		const isValid = await response.json();
+		return isValid;
+		//json nie dziala
+	}
+	async function Validation(event)
+	{
+		event.preventDefault();
+		var currentPassword = document.getElementById("currentPassword").value;
+		var newpassword = document.getElementById("password").value;
+		if (currentPassword.trim() != "" && newpassword.trim() != "") 
+		{
+			const isValid = await CheckPassword(currentPassword);
+			if (isValid) {
+				const response = await fetch('/Account/ChangePassword', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ currentPassword, password: newPassword })
+				});
+				if (response.ok) {
+				
+					console.log("Password changed successfully.");
+					
+				} else {
+					
+					console.error("Failed to change password.");
+				}
+			}
+			else
+			{
+				document.getElementById("errormessage").innerHTML = "You entered thewrong password";
+			}
+			
+		}
+		else
+		{
+			document.getElementById("errormessage").innerHTML = "You didnt entered anything";
+		}
+	}
+</script>
