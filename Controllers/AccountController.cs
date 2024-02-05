@@ -73,7 +73,7 @@ namespace PortfolioApp.Controllers
 		public async Task<IActionResult> Logout()
 		{
 			await _signInManager.SignOutAsync();
-			return Redirect("https://localhost:7080/");
+			return Redirect("/");
 
 		}
 		[HttpPost]
@@ -193,18 +193,20 @@ namespace PortfolioApp.Controllers
 			return Dict;
 
 		}
-		[HttpPost]
-		public async Task<IActionResult> ChangePassword(string currentPassword, string password)
+	
+		public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword)
 		{
 		
-			var USER = GetLoggedUser().Result;
+			
 			if (User.Identity.IsAuthenticated)
 			{
-				var result = await _userManager.ChangePasswordAsync(USER, currentPassword, password);
+				var USER = await GetLoggedUser();
+				var result = await _userManager.ChangePasswordAsync(USER, currentPassword, newPassword);
 				if (result.Succeeded)
 				{
 					await _Context.SaveChangesAsync();
 					await Logout();
+					
 				}
 				
 			}

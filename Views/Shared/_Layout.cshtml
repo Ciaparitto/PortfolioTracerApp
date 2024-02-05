@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="/css/Layout.css" />
+</head>
+<body>
+    <div class="page">
+        <div class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item px-3">
+                    <a class="nav-link active" href="/" )">Home</a>
+                </li>
+                <li class="nav-item px-3">
+                    <a class="nav-link active" href="/YourAssets" )">Your Assets</a>
+                </li>
+                <li class="nav-item px-3">
+                    <a class="nav-link active" href="/YourTransactions" )">Your Transactions</a>
+                </li>
+                <li class="nav-item px-3">
+                    <a class="nav-link active" href="/Account" )">Your Account</a>
+                </li>
+
+            </ul>
+        </div>
+
+        <main>
+            <article class="content px-4">
+                @RenderBody() 
+            </article>
+        </main>
+    </div>
+
+ 
+</body>
+</html>

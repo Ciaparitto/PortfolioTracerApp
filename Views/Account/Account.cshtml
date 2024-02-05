@@ -1,12 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+//zmien to na .razor
 <head>
 	<link rel="stylesheet" href="/css/AddHomeStyle.css" />
 </head>
-@{
 
-	var errorMessage = TempData["ErrorMessage"] as string;
-}
 <div id="UserData-Container">
 	<h1 class="UserData" id="UserName">Your account name: <strong>@ViewBag.UserName</strong></h1>
 	<br />
@@ -33,42 +34,35 @@
 		document.getElementById("changePasswordForm").addEventListener('submit', Validation);
 	});
 	async function CheckPassword(password) {
-		const response = await fetch(`/Account/CheckPassword`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ password: password })
-		});
+		const response = await fetch(`/Account/CheckPassword?password=${password}`);
+	
 
 		if (!response.ok) {
 			throw new Error(`Server responded with status ${response.status}`);
 		}
 		const isValid = await response.json();
+		
 		return isValid;
-		//json nie dziala
+	
 	}
 	async function Validation(event)
 	{
 		event.preventDefault();
 		var currentPassword = document.getElementById("currentPassword").value;
-		var newpassword = document.getElementById("password").value;
-		if (currentPassword.trim() != "" && newpassword.trim() != "") 
-		{
+		var newPassword = document.getElementById("password").value;
+		if (currentPassword.trim() != "" && newPassword.trim() != "") {
 			const isValid = await CheckPassword(currentPassword);
 			if (isValid) {
-				const response = await fetch('/Account/ChangePassword', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ currentPassword, password: newPassword })
-				});
+				const response = await fetch(`/Account/ChangePassword?currentPassword=${currentPassword}&newPassword=${newPassword}`);
+				
 				if (response.ok) {
 				
 					console.log("Password changed successfully.");
+					location.reload();
 					
 				} else {
 					
-					console.error("Failed to change password.");
+					console.log("Failed to change password.");
 				}
 			}
 			else
