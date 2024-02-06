@@ -1,0 +1,74 @@
+﻿@page "/Account"
+@using PortfolioApp.Components.Services.Interfaces
+@using PortfolioApp.Models
+@inject IUserService _UserService;
+@inject IJSRuntime JSRuntime
+<div id="UserData-Container">
+    <h1 class="UserData" id="UserName">Your account name: <strong>@USER.UserName</strong></h1>
+    <br />
+    <h2><strong>Change Password</strong></h2>
+    <br />
+    <EditForm OnValidSubmit="ChangePassword">
+        <DataAnnotationsValidator />
+
+        <div>
+            <label for="currentPassword">Current password</label>
+            <InputPassword id="currentPassword" @bind-Value="@currentPassword" />
+        </div>
+        <br />
+        <div>
+            <label for="password">New password</label>
+            <InputPassword id="password" @bind-Value="@newPassword" />
+        </div>
+        <br />
+        <button id="ChangePassword-button" type="submit">Change Password</button>
+        <ValidationSummary />
+    </EditForm>
+    
+    <button id="LogOut-button" @onclick="Logout">LogOut</button>
+</div>
+
+@code {
+    private UserModel USER;
+    public string currentPassword;
+    public string newPassword;
+    private string Message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        USER = await _UserService.GetLoggedUser();
+    }
+
+    private async Task ChangePassword()
+    {
+        if (!String.IsNullOrWhiteSpace(currentPassword) && !String.IsNullOrWhiteSpace(newPassword))
+        {
+            var PasswordIsOk = await _UserService.CheckPassword(currentPassword, newPassword);
+            if (PasswordIsOk)
+            {
+                await _UserService.ChangePassword(currentPassword, newPassword);
+                RefreshPage();
+            }
+           
+        }
+        await ChangeMessage("Wrong Password");
+       
+    }
+    public async Task ChangeMessage(string message)
+    {
+        Message = message;
+        StateHasChanged();
+        await Task.Delay(5000);
+        StateHasChanged();
+        Message = "";
+    }
+    private async Task Logout()
+    {
+        await _UserService.Logout();
+    }
+    private async Task RefreshPage()
+    {
+        await JSRuntime.InvokeVoidAsync("window.location.reload");
+    }
+  
+}

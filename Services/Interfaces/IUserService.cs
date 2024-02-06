@@ -1,4 +1,5 @@
-﻿using PortfolioApp.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using PortfolioApp.Models;
 
 namespace PortfolioApp.Components.Services.Interfaces
 {
@@ -9,6 +10,10 @@ namespace PortfolioApp.Components.Services.Interfaces
 		public Task<Dictionary<string, double>> GetUserAssetsByType(string Type);
 		public Task<Dictionary<string, double>> GetUserAssets();
 		public Task<double> GetAmmountOfAsset(string AssetCode, string typeOfAsset);
-	
-	}
+		public Task ChangePassword(string currentPassword, string newPassword);
+
+        public Task ChangeUsername(string currentPassword, string newUsername);
+		public  Task<bool> CheckPassword(string password);
+		public Task Logout();
+    }
 }

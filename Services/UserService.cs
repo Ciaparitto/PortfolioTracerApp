@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 
@@ -132,5 +133,59 @@ namespace PortfolioApp.Components.Services
 			}
 			return 0;
 		}
-	}
+        public async Task<bool> CheckPassword(string password)
+        {
+            var USER = await GetLoggedUser();
+            var passwordCheck = await _userManager.CheckPasswordAsync(USER, password);
+            {
+                if (passwordCheck)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public async Task ChangePassword(string currentPassword, string newPassword)
+        {
+            var USER = await GetLoggedUser();
+            if (USER != null)
+            {         
+                var result = await _userManager.ChangePasswordAsync(USER, currentPassword, newPassword);
+                if (result.Succeeded)
+                {
+                    await _Context.SaveChangesAsync();              
+                }
+            }
+        }
+     
+        public async Task ChangeUsername(string currentPassword, string newUsername)
+
+        {
+
+            var USER = GetLoggedUser().Result;
+            if (USER != null)
+            {               
+                var passwordCheck = await _userManager.CheckPasswordAsync(USER, currentPassword);
+                {
+                    if (passwordCheck)
+                    {
+                        var result = await _userManager.SetUserNameAsync(USER, newUsername);
+                        if (result.Succeeded)
+                        {
+                            await _Context.SaveChangesAsync();                        
+                        }
+
+                    }
+                }
+
+
+            }
+       
+        }
+        public async Task Logout()
+        {
+            await _signInManager.SignOutAsync();
+         
+        }
+    }
 }

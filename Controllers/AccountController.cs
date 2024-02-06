@@ -194,72 +194,7 @@ namespace PortfolioApp.Controllers
 
 		}
 	
-		public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword)
-		{
 		
-			
-			if (User.Identity.IsAuthenticated)
-			{
-				var USER = await GetLoggedUser();
-				var result = await _userManager.ChangePasswordAsync(USER, currentPassword, newPassword);
-				if (result.Succeeded)
-				{
-					await _Context.SaveChangesAsync();
-					await Logout();
-					
-				}
-				
-			}
-			return Ok();
-
-		}
-		[HttpPost]
-		public async Task<IActionResult> ChangeUsername(string currentPassword, string newUsername)
-		{
-
-			
-			if (User.Identity.IsAuthenticated && !string.IsNullOrWhiteSpace(currentPassword) && !string.IsNullOrWhiteSpace(newUsername))
-			{
-				var USER = GetLoggedUser().Result;
-				var passwordCheck = await _userManager.CheckPasswordAsync(USER, currentPassword);
-				{
-					if(passwordCheck)
-					{
-						var result = await _userManager.SetUserNameAsync(USER, newUsername);
-						if(result.Succeeded)
-						{
-							await _Context.SaveChangesAsync();
-							return Redirect("/");
-						}
-					
-					}
-				}
-				
-
-			}
-			return Redirect("/YourAccount");
-		}
-		[HttpGet]
-		[Route("/Account")]
-		[Authorize]
-		public async Task<IActionResult> Account()
-		{
-			
-			var USER = GetLoggedUser().Result;
-			ViewBag.UserName = USER.UserName;
-			return View();
-		}
-		public async Task<bool> CheckPassword(string password)
-		{
-			var USER = await GetLoggedUser();
-			var passwordCheck = await _userManager.CheckPasswordAsync(USER, password);
-			{
-				if (passwordCheck)
-				{
-					return true;
-				}
-			}
-			return false;
-		}
+		
 	}
 }
