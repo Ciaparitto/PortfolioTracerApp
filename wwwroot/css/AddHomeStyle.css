@@ -105,7 +105,6 @@ button {
 #UserName {
     font-size: 200%;
 }
-#ChangePassword-button, #LogOut-buttton {
- 
-    margin: 5px;
+#ChangePassword-button, #LogOut-button {
+    margin: 10px;
 }

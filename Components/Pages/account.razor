@@ -1,37 +1,44 @@
 ﻿@page "/Account"
+@using Microsoft.Build.Framework
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
 @inject IUserService _UserService;
 @inject IJSRuntime JSRuntime
+<PageTitle>Your Account</PageTitle>
+<HeadContent>
+    <link href="/css/AddHomeStyle.css" rel="stylesheet" />
+</HeadContent>
 <div id="UserData-Container">
-    <h1 class="UserData" id="UserName">Your account name: <strong>@USER.UserName</strong></h1>
+    @if(USER != null)
+    {
+        <h1 class="UserData" id="UserName">Your account name: <strong>@USER.UserName</strong></h1>
+    }
+    
     <br />
     <h2><strong>Change Password</strong></h2>
     <br />
-    <EditForm OnValidSubmit="ChangePassword">
-        <DataAnnotationsValidator />
+  
 
-        <div>
-            <label for="currentPassword">Current password</label>
-            <InputPassword id="currentPassword" @bind-Value="@currentPassword" />
-        </div>
-        <br />
-        <div>
-            <label for="password">New password</label>
-            <InputPassword id="password" @bind-Value="@newPassword" />
-        </div>
+     <EditForm Model="@model" OnValidSubmit="ChangePasswordFunc">
+      
+        <ValidationSummary />
+        <p>Current Password  <InputText type="password" @bind-Value="model.CurrentPassword" /></p>       
+        <br />           
+        <p>New Password <InputText type="password" @bind-Value="model.CurrentPassword" /></p>
         <br />
         <button id="ChangePassword-button" type="submit">Change Password</button>
-        <ValidationSummary />
+    
     </EditForm>
     
-    <button id="LogOut-button" @onclick="Logout">LogOut</button>
+    <form action="/Account/Logout" method="post">
+        <button id="LogOut-buttton" type="submit">LogOut</button>
+    </form>
+   
 </div>
 
 @code {
     private UserModel USER;
-    public string currentPassword;
-    public string newPassword;
+    public ChangePassword model = new ChangePassword();
     private string Message;
 
     protected override async Task OnInitializedAsync()
@@ -39,20 +46,20 @@
         USER = await _UserService.GetLoggedUser();
     }
 
-    private async Task ChangePassword()
+    private async Task ChangePasswordFunc()
     {
-        if (!String.IsNullOrWhiteSpace(currentPassword) && !String.IsNullOrWhiteSpace(newPassword))
+        if (!String.IsNullOrWhiteSpace(model.CurrentPassword) && !String.IsNullOrWhiteSpace(model.NewPassword))
         {
-            var PasswordIsOk = await _UserService.CheckPassword(currentPassword, newPassword);
+            var PasswordIsOk = await _UserService.CheckPassword(model.CurrentPassword);
             if (PasswordIsOk)
             {
-                await _UserService.ChangePassword(currentPassword, newPassword);
+                await _UserService.ChangePassword(model.CurrentPassword, model.NewPassword);
                 RefreshPage();
             }
-           
+
         }
         await ChangeMessage("Wrong Password");
-       
+
     }
     public async Task ChangeMessage(string message)
     {
@@ -62,13 +69,28 @@
         StateHasChanged();
         Message = "";
     }
-    private async Task Logout()
+    public void nwmlol()
     {
-        await _UserService.Logout();
+        Console.WriteLine("Wywołanie funkcji nwmlol");
+    }
+    public async Task LogoutFunc()
+    {
+        Console.WriteLine("Wywołanie funkcji LogoutFunc");
     }
     private async Task RefreshPage()
     {
         await JSRuntime.InvokeVoidAsync("window.location.reload");
     }
+
+    public class ChangePassword
+    {
+        [Required]
+        public string CurrentPassword { get; set; }
+
+        [Required]
+        public string NewPassword { get; set; }
+    }
+
   
 }
+
