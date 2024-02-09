@@ -12,7 +12,6 @@
 	<h1 class="UserData" id="UserName">Your account name: <strong>@ViewBag.UserName</strong></h1>
 	<br />
 	<h2><strong>Change Password</strong></h2>
-	<br />
 	@using (Html.BeginForm("ChangePassword", "Account", FormMethod.Post, new { id = "changePasswordForm" }))
 	{
 
@@ -20,18 +19,32 @@
 		<br />
 		<span> New password<input id="password" name="password" type="password" /></span>
 		<br />
-		<button id="ChangePassword-button" type="submit">Change Password</button>
-		<p id="errormessage"></p>
-	}
+		<button id="ChangePassword-button" class="Account-button" type="submit">Change Password</button>
+		
+	}	
+	<h2><strong>Change Username</strong></h2>
+	@using (Html.BeginForm("ChangeUsername", "Account", FormMethod.Post, new { id = "changeUsernameForm" }))
+	{
 
+		<span> Current password<input id="currentPassword2" name="currentPassword2" type="password" /></span>
+		<br />
+		<span> New Username<input id="Username" name="Username" type="text" /></span>
+		<br />
+		<button id="ChangeUsername-button" class="Account-button" type= "submit">Change Username</button>
+		
+	}
 	
 	<form action="/Account/Logout" method="post">
-		<button id="LogOut-buttton" type="submit" >LogOut</button>
+		<button id="LogOut-buttton" class="Account-button" type="submit">LogOut</button>
 	</form>
+	<p id="errormessage"></p>
 </div>
 <script>
 	document.addEventListener('DOMContentLoaded', (event) => {
-		document.getElementById("changePasswordForm").addEventListener('submit', Validation);
+		document.getElementById("changePasswordForm").addEventListener('submit', ChangePassword);
+	});
+	document.addEventListener('DOMContentLoaded', (event) => {
+		document.getElementById("changeUsernameForm").addEventListener('submit', ChangeUsername);
 	});
 	async function CheckPassword(password) {
 		const response = await fetch(`/Account/CheckPassword?password=${password}`);
@@ -45,7 +58,7 @@
 		return isValid;
 	
 	}
-	async function Validation(event)
+	async function ChangePassword(event)
 	{
 		event.preventDefault();
 		var currentPassword = document.getElementById("currentPassword").value;
@@ -73,6 +86,35 @@
 		}
 		else
 		{
+			document.getElementById("errormessage").innerHTML = "You didnt entered anything";
+		}
+	}
+
+	async function ChangeUsername(event) {
+		event.preventDefault();
+		var currentPassword = document.getElementById("currentPassword2").value;
+		var NewUsername = document.getElementById("Username").value;
+		if (currentPassword.trim() != "" && NewUsername.trim() != "") {
+			const isValid = await CheckPassword(currentPassword);
+			if (isValid) {
+				const response = await fetch(`/Account/ChangeUsername?currentPassword=${currentPassword}&newUsername=${NewUsername}`);
+
+				if (response.ok) {
+
+					console.log("Password changed successfully.");
+					location.reload();
+
+				} else {
+
+					console.log("Failed to change password.");
+				}
+			}
+			else {
+				document.getElementById("errormessage").innerHTML = "You entered thewrong password";
+			}
+
+		}
+		else {
 			document.getElementById("errormessage").innerHTML = "You didnt entered anything";
 		}
 	}

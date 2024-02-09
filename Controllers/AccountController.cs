@@ -96,9 +96,12 @@ namespace PortfolioApp.Controllers
 		}
 		[HttpGet]
 		[Route("/YourAccount")]
-		public IActionResult Account()
+		public async Task<IActionResult> Account()
 		{
-			return View();
+			var USER = await GetLoggedUser();
+			ViewBag.UserName = USER.UserName;
+
+            return View();
 		}
 		public async Task<UserModel> GetLoggedUser()
 		{

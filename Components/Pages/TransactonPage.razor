@@ -98,7 +98,6 @@
 		model.TransactionType = "Deposit";
 
 		TransactionsList = await _DbService.GetUserTransactions();
-		TransactionsList.Reverse();
 		MetalDict = await _DbService.GetMetalDict();
 
 		CurrencyDict = await _DbService.GetCurrencyDict();
@@ -114,6 +113,7 @@
 		Dict = AllAssetsDict;
 
 	}
+		
 	public async Task AddTransactionfunc()
 	{
 
@@ -131,6 +131,7 @@
 					var User = await _userService.GetLoggedUser();
 					model.UserId = User.Id;
 					await _DbService.AddTransactionToDb(model);
+					TransactionsList = await _DbService.GetUserTransactions();
 					await ChangeMessage($"successfully {model.TransactionType} {Dict[model.AssetCode]} in number {model.Ammount}");
 				}
 				catch (Exception ex)
@@ -143,8 +144,9 @@
 		else
 		{
 			await ChangeMessage("you have to insert data");
-			
+
 		}
+		
 	}
 	public async Task UpdateSelectedType(ChangeEventArgs Event)
 	{

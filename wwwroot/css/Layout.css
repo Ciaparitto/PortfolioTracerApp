@@ -74,3 +74,11 @@
     height: 248px;
     
 }
+main {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height:80vh;
+    width: 100%;
+}

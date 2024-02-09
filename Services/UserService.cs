@@ -41,10 +41,10 @@ namespace PortfolioApp.Components.Services
 				if (User != null)
 				{
 					
-					var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id).ToList();
+					var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id).OrderBy(x => x.date).ToList();
 					foreach (var Asset in AssetList)
 					{
-						if (!Dict.ContainsKey(Asset.AssetCode) || Dict[Asset.AssetCode] == null)
+						if (!Dict.ContainsKey(Asset.AssetCode))
 						{
 							Dict[Asset.AssetCode] = Asset.Ammount;
 						}
@@ -80,11 +80,11 @@ namespace PortfolioApp.Components.Services
 				var Dict = new Dictionary<string, double>();
 				if (User != null)
 				{
-					var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id && x.TypeOfAsset == Type).ToList();
-					
-					foreach (var Asset in AssetList)
+				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id).OrderBy(x => x.date).ToList();
+
+				foreach (var Asset in AssetList)
 					{
-						if (!Dict.ContainsKey(Asset.AssetCode) || Dict[Asset.AssetCode] == null)
+						if (!Dict.ContainsKey(Asset.AssetCode))
 						{
 							Dict[Asset.AssetCode] = Asset.Ammount;
 						}
@@ -96,13 +96,16 @@ namespace PortfolioApp.Components.Services
 							}
 							else
 							{
+							
 								Dict[Asset.AssetCode] -= Asset.Ammount;
 							}
 						}
 
 						if (Dict[Asset.AssetCode] <= 0)
 						{
+
 							Dict.Remove(Asset.AssetCode);
+							
 						}
 					}
 				}

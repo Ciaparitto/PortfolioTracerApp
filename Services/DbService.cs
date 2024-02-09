@@ -101,7 +101,7 @@ namespace PortfolioApp.Services
 		public async Task<List<TransactionModel>> GetUserTransactions()
 		{
 			var USER = await _userService.GetLoggedUser();
-			var List = await _Context.Transactions.Where(x => x.UserId == USER.Id).ToListAsync();
+			var List = await _Context.Transactions.Where(x => x.UserId == USER.Id).OrderByDescending(x => x.date).ToListAsync();
 			return List;
 		
 			
