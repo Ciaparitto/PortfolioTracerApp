@@ -20,7 +20,8 @@ function createChart() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            legend: { display: false }
         }
     });
 }
@@ -56,13 +57,17 @@ async function GetData(NumberOfDays, typeOfAsset)
         myChart.destroy();
         myChart = null;
     }
+
     document.getElementById("LoadingMessage").innerHTML = "Loading...";
     document.getElementById("AssetValueChange").innerHTML = "";
+
     var yValuesTemp = [];
     var xValuesTemp = [];
     const dictionaryValues = {};
     let response;
-    if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "") {
+
+    if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "")
+    {
         response = await fetch("/Account/GetUserAssets");
     } else {
         response  = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
@@ -90,6 +95,7 @@ async function GetData(NumberOfDays, typeOfAsset)
             dictionaryValues[formattedDate] = value.toFixed(2);
         }
     }
+
     for (const Asset in dictionaryValues) {
         xValuesTemp.push(Asset);
         yValuesTemp.push(parseFloat(dictionaryValues[Asset]));
@@ -118,11 +124,11 @@ async function GetData(NumberOfDays, typeOfAsset)
     const AssetValueChange = (AssetValue - AssetValue2).toFixed(2);
     if (AssetValueChange > 0)
     {
-        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} has increased by ${AssetValueChange}`;
+        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} has increased by ${AssetValueChange}$`;
     }
     if (AssetValueChange < 0)
     {
-        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} has decreased by ${AssetValueChange}`;
+        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} has decreased by ${AssetValueChange}$`;
     }
     if (AssetValueChange == 0)
     {

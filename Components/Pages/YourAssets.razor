@@ -14,7 +14,6 @@
 <div id="AssetSelect">
 	<p>
 		Choose type <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
-			<option class="option" value="">Choose...</option>
 			<option class="option" value="All">All</option>
 			<option class="option" value="Metal">Metal</option>
 			<option class="option" value="Currency">Currency</option>
@@ -23,11 +22,10 @@
 	</p>
 </div>
 <div id="Assets-Container">
-	
-	@if(UserAssetList != null)
+
+	@if (UserAssetList != null)
 	{
-		
-		foreach(var asset in UserAssetList)
+		foreach (var asset in UserAssetList)
 		{
 			<p class="Asset">@($"You own {asset.Value} units of {asset.Key}")</p>
 		}
@@ -63,7 +61,7 @@
 		{
 			UserAssetList = await _UserService.GetUserAssets();
 		}
-
+		StateHasChanged();
 	}
 
 }

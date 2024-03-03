@@ -80,7 +80,7 @@ namespace PortfolioApp.Components.Services
 				var Dict = new Dictionary<string, double>();
 				if (User != null)
 				{
-				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id).OrderBy(x => x.date).ToList();
+				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id && x.TypeOfAsset == Type).OrderBy(x => x.date).ToList();
 
 				foreach (var Asset in AssetList)
 					{
