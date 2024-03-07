@@ -12,101 +12,98 @@ namespace PortfolioApp.Controllers
 {
 	public class AccountController : Controller
 	{
-		private readonly UserManager<UserModel> _userManager;
-		private readonly SignInManager<UserModel> _signInManager;
+		private readonly UserManager<UserModel> _UserManager;
+		private readonly SignInManager<UserModel> _SignInManager;
 		private readonly IDbService _DbService;
-		public readonly IUserService _userService;
-		private readonly HttpClient httpClient;
+		public readonly IUserService _UserService;
+		private readonly HttpClient HttpClient;
 		private readonly AppDbContext _Context;
-		public AccountController(HttpClient httpClient,UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService, AppDbContext context)
+		public AccountController(HttpClient httpClient, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService, AppDbContext context)
 		{
-			_userManager = userManager;
-			_signInManager = signInManager;
+			_UserManager = userManager;
+			_SignInManager = signInManager;
 			_DbService = dbService;
-			_userService = userService;
-			this.httpClient = httpClient;
+			_UserService = userService;
+			this.HttpClient = httpClient;
 			_Context = context;
 		}
-		public IActionResult Index()
-		{
-			return View();
-		}
+
 		[HttpGet]
 		public ActionResult Register()
 		{
 			return View();
 		}
 		[HttpPost]
-		public async Task<IActionResult> Register(RegisterModel data)
+		public async Task<IActionResult> Register(RegisterModel RegisterData)
 		{
 
-          
-            if (ModelState.IsValid)
+
+			if (ModelState.IsValid)
 			{
-                var NewUser = new UserModel
-                {
-                    Email = data.EmailAdress,
-                    UserName = data.UserName,
-                };
-                await _userManager.CreateAsync(NewUser, data.Password);
-				await _signInManager.PasswordSignInAsync(data.Password, data.Password, false, false);
+				var NewUser = new UserModel
+				{
+					Email = RegisterData.EmailAdress,
+					UserName = RegisterData.UserName,
+				};
+				await _UserManager.CreateAsync(NewUser, RegisterData.Password);
+				await _SignInManager.PasswordSignInAsync(RegisterData.Password, RegisterData.Password, false, false);
 				return Redirect("https://localhost:7080/");
 			}
-			return View(data);
+			return View(RegisterData);
 		}
 		[HttpGet]
 		public ActionResult Login()
 		{
-			return View("Login");
+			return View();
 		}
 		[HttpPost]
-		public async Task<IActionResult> Login(LoginModel data)
+		public async Task<IActionResult> Login(LoginModel LoginData)
 		{
 			if (ModelState.IsValid)
 			{
-				await _signInManager.PasswordSignInAsync(data.UserName, data.Password, false, false);
-				return Redirect("https://localhost:7080/");
+				await _SignInManager.PasswordSignInAsync(LoginData.UserName, LoginData.Password, false, false);
+				return Redirect("/");
 			}
 			return View();
 		}
 		[HttpPost]
 		public async Task<IActionResult> Logout()
 		{
-			await _signInManager.SignOutAsync();
+			await _SignInManager.SignOutAsync();
 			return Redirect("/");
 
 		}
 		[HttpPost]
-		public async Task<IActionResult> AddAsset(AssetModel body)
+		public async Task<IActionResult> AddAsset(AssetModel AssetBody)
 		{
-			
-			if(ModelState.IsValid)
+
+			if (ModelState.IsValid)
 			{
 				var Model = new AssetModel
 				{
-					AssetCode = body.AssetCode,
-					Ammount = body.Ammount,
-					TypeOfAsset = body.TypeOfAsset,
-					UserId =  _userService.GetLoggedUser().Result.Id,
+					AssetCode = AssetBody.AssetCode,
+					Ammount = AssetBody.Ammount,
+					TypeOfAsset = AssetBody.TypeOfAsset,
+					UserId = _UserService.GetLoggedUser().Result.Id,
 				};
 				await _DbService.AddAssetToDb(Model);
 				return Redirect("/");
 			}
-			return View(body);
+			return View(AssetBody);
 		}
 		[HttpGet]
 		[Route("/YourAccount")]
 		public async Task<IActionResult> Account()
 		{
-			var USER = await GetLoggedUser();
-			ViewBag.UserName = USER.UserName;
+			var User = await GetLoggedUser();
+			ViewBag.UserName = User.UserName;
 
-            return View();
+			return View();
 		}
 		public async Task<UserModel> GetLoggedUser()
 		{
-			var USER = await _userManager.GetUserAsync(User);
-			return USER;
+			var User = await _UserManager.GetUserAsync(base.User);
+			return User;
 		}
 		public async Task<double> GetAmmountOfAsset(string AssetCode)
 		{
@@ -202,58 +199,50 @@ namespace PortfolioApp.Controllers
 			return Dict;
 
 		}
-        public async Task<bool> CheckPassword(string password)
-        {
-            var USER = await GetLoggedUser();
-            var passwordCheck = await _userManager.CheckPasswordAsync(USER, password);
-            {
-                if (passwordCheck)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        public async Task ChangePassword(string currentPassword, string newPassword)
-        {
-            var USER = await GetLoggedUser();
-            if (USER != null)
-            {
-                var result = await _userManager.ChangePasswordAsync(USER, currentPassword, newPassword);
-                if (result.Succeeded)
-                {
-                    await _Context.SaveChangesAsync();
-                }
-            }
-        }
+		public async Task<bool> CheckPassword(string Password)
+		{
+			var User = await GetLoggedUser();
+			var PasswordCheck = await _UserManager.CheckPasswordAsync(User, Password);
+			{
+				if (PasswordCheck)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		public async Task ChangePassword(string CurrentPassword, string NewPassword)
+		{
+			var User = await GetLoggedUser();
+			if (User != null)
+			{
+				var Result = await _UserManager.ChangePasswordAsync(User, CurrentPassword, NewPassword);
+				if (Result.Succeeded)
+				{
+					await _Context.SaveChangesAsync();
+				}
+			}
+		}
 
-        public async Task ChangeUsername(string currentPassword, string newUsername)
+		public async Task ChangeUsername(string CurrentPassword, string NewUser)
+		{
+			var User = GetLoggedUser().Result;
+			if (User != null)
+			{
+				var PasswordCheck = await _UserManager.CheckPasswordAsync(User, CurrentPassword);
+				{
+					if (PasswordCheck)
+					{
+						var Result = await _UserManager.SetUserNameAsync(User, NewUser);
+						if (Result.Succeeded)
+						{
+							await _Context.SaveChangesAsync();
+						}
 
-        {
-
-            var USER = GetLoggedUser().Result;
-            if (USER != null)
-            {
-                var passwordCheck = await _userManager.CheckPasswordAsync(USER, currentPassword);
-                {
-                    if (passwordCheck)
-                    {
-                        var result = await _userManager.SetUserNameAsync(USER, newUsername);
-                        if (result.Succeeded)
-                        {
-                            await _Context.SaveChangesAsync();
-                        }
-
-                    }
-                }
-
-
-            }
-
-        }
-      
-    }
-
-
+					}
+				}
+			}
+		}
+	}
 }
 

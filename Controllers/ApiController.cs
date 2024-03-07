@@ -9,46 +9,35 @@ namespace PortfolioApp.Controllers
 {
 	public class ApiController : Controller
 	{
-		private readonly HttpClient httpClient;
-		private readonly IUserService _userService;
-		private readonly AppDbContext _Context;
+		private readonly HttpClient HttpClient;
 
-
-		public ApiController(HttpClient httpClient, IUserService userService,AppDbContext context)
+		public ApiController(HttpClient httpClient)
 		{
-			this.httpClient = httpClient;
+			this.HttpClient = httpClient;
 			httpClient.Timeout = TimeSpan.FromSeconds(30);
-			_userService = userService;
-			_Context = context;
-		}
-		public IActionResult Index()
-
-		{
-			return View();
 		}
 		public async Task<CurrencyModel> GetRatesByDay(string Date)
 		{
 
-			string apiKey = "4fc262fd8b1aa817e289adbd28a2166b";
-			httpClient.DefaultRequestHeaders.Add("x-access-token", apiKey);
-			string url = $"https://api.metalpriceapi.com/v1/{Date}?api_key={apiKey}";
+			string ApiKey = "4fc262fd8b1aa817e289adbd28a2166b";
+			HttpClient.DefaultRequestHeaders.Add("x-access-token", ApiKey);
+			string url = $"https://api.metalpriceapi.com/v1/{Date}?api_key={ApiKey}";
 
 			try
-
 			{
-				var response = httpClient.GetAsync(url).Result;
-				string result = await response.Content.ReadAsStringAsync();
-				var Metal = JsonConvert.DeserializeObject<CurrencyModel>(result);
+				var Response = HttpClient.GetAsync(url).Result;
+				string Result = await Response.Content.ReadAsStringAsync();
+				var Metal = JsonConvert.DeserializeObject<CurrencyModel>(Result);
 				return Metal;
 			}
-			catch (Exception err)
+			catch (Exception Error)
 			{
-				Console.WriteLine($"error {err.Message}");
+				Console.WriteLine($"error {Error.Message}");
 				return null;
 			}
 		}
-	
-	
+
+
 
 	}
 }

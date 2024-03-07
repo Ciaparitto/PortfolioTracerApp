@@ -5,6 +5,7 @@
 @rendermode InteractiveServer
 @inject IDbService _DbService
 @inject IUserService _userService;
+@inject IAssetGetter _AssetGetter
 <PageTitle>Your Transactions History</PageTitle>
 <HeadContent>
 	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
@@ -119,7 +120,7 @@
 
 		if (!string.IsNullOrEmpty(model.AssetCode) && !string.IsNullOrEmpty(model.TransactionType) && model.Ammount != 0)
 		{
-			var UserAssetAmmount = await _userService.GetAmmountOfAsset(model.AssetCode, model.TypeOfAsset);
+			var UserAssetAmmount = await _UserGetter.GetAmmountOfAsset(model.AssetCode, model.TypeOfAsset);
 			if (model.TransactionType == "Withdraw" && model.Ammount > UserAssetAmmount)
 			{
 				await ChangeMessage($"You dont have {model.Ammount} {model.AssetCode}");
