@@ -6,22 +6,27 @@
 @inject IDbService _DbService
 @inject IUserService _userService;
 @inject IAssetGetter _AssetGetter
+@inject IUserGetter _UserGetter;
 <PageTitle>Your Transactions History</PageTitle>
 <HeadContent>
 	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
 </HeadContent> 
 <div id="AddingTransaction">
-	<EditForm Model="@model" OnSubmit="@AddTransactionfunc">
+	@if(LoggedUser != null)
+	{
+		<p>You have @LoggedUser.Money $</p>
+	}
+	<EditForm Model="@Model" OnSubmit="@AddTransactionfunc">
 		<p>
 			What do you want
-			<InputSelect @bind-Value="model.TransactionType">
+			<InputSelect @bind-Value="Model.TransactionType">
 				<option class="option" value="Deposit">Deposit</option>
 				<option class="option" value="Withdraw">Withdraw</option>				
 			</InputSelect>
 		</p>
 		<p>
 			Choose type
-			<InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
+			<InputSelect @bind-Value="Model.TypeOfAsset" @oninput="UpdateSelectedType">
 				<option class="option" value="">Choose...</option>
 				<option class="option" value="Metal">Metal</option>
 				<option class="option" value="Currency">Currency</option>
@@ -29,7 +34,7 @@
 			</InputSelect>
 		</p>
 		<p>
-			Choose Asset<InputSelect @bind-Value="model.AssetCode">
+			Choose Asset<InputSelect @bind-Value="Model.AssetCode">
 				<option class="option" value="">Choose...</option>
 				@if (Dict != null && Dict.Count > 0)
 				{
@@ -43,14 +48,14 @@
 		
 		@if (selectedType == "Metal")
 		{
-			<p>How many ounces do you want to @model.TransactionType <InputNumber @bind-Value="model.Ammount" /></p>
+			<p>How many ounces do you want to @Model.TransactionType <InputNumber @bind-Value="Model.Ammount" /></p>
 		}
 		else
 		{
-			<p>How many units you want to  @model.TransactionType<InputNumber @bind-Value="model.Ammount" /></p>
+			<p>How many units you want to  @Model.TransactionType<InputNumber @bind-Value="Model.Ammount" /></p>
 		}
 		
-		<button type="submit">@model.TransactionType</button>
+		<button type="submit">@Model.TransactionType</button>
 	</EditForm>
 	<p>@InfoMessage</p>
 </div>
@@ -85,18 +90,19 @@
 @code{
 	private string ChoosedAssetType;
 	private string InfoMessage;
+	private UserModel LoggedUser;
 	private Dictionary<string, string> MetalDict;
 	private Dictionary<string, string> CurrencyDict;
 	private Dictionary<string, string> CryptoCurrencyDict;
 	private Dictionary<string, string> AllAssetsDict;
 	public Dictionary<string, string> Dict;
 	private string selectedType = string.Empty;
-	public TransactionModel model = new TransactionModel();
+	public TransactionModel Model = new TransactionModel();
 	private List<TransactionModel> TransactionsList;
 	protected override async Task OnInitializedAsync()
 	{
-
-		model.TransactionType = "Deposit";
+		LoggedUser = await _UserGetter.GetLoggedUser();
+		Model.TransactionType = "Deposit";
 
 		TransactionsList = await _DbService.GetUserTransactions();
 		MetalDict = await _DbService.GetMetalDict();
@@ -118,22 +124,22 @@
 	public async Task AddTransactionfunc()
 	{
 
-		if (!string.IsNullOrEmpty(model.AssetCode) && !string.IsNullOrEmpty(model.TransactionType) && model.Ammount != 0)
+		if (!string.IsNullOrEmpty(Model.AssetCode) && !string.IsNullOrEmpty(Model.TransactionType) && Model.Ammount != 0)
 		{
-			var UserAssetAmmount = await _UserGetter.GetAmmountOfAsset(model.AssetCode, model.TypeOfAsset);
-			if (model.TransactionType == "Withdraw" && model.Ammount > UserAssetAmmount)
+			var UserAssetAmmount = await _AssetGetter.GetAmmountOfAsset(Model.AssetCode, Model.TypeOfAsset);
+			if (Model.TransactionType == "Withdraw" && Model.Ammount > UserAssetAmmount)
 			{
-				await ChangeMessage($"You dont have {model.Ammount} {model.AssetCode}");
+				await ChangeMessage($"You dont have {Model.Ammount} {Model.AssetCode}");
 			}
 			else
 			{				
 				try
 				{
-					var User = await _userService.GetLoggedUser();
-					model.UserId = User.Id;
-					await _DbService.AddTransactionToDb(model);
+					var User = await _UserGetter.GetLoggedUser();
+					Model.UserId = User.Id;
+					await _DbService.AddTransactionToDb(Model);
 					TransactionsList = await _DbService.GetUserTransactions();
-					await ChangeMessage($"successfully {model.TransactionType} {Dict[model.AssetCode]} in number {model.Ammount}");
+					await ChangeMessage($"successfully {Model.TransactionType} {Dict[Model.AssetCode]} in number {Model.Ammount}");
 				}
 				catch (Exception ex)
 				{

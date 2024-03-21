@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Elfie.Model;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
+using PortfolioApp.Services;
 using PortfolioApp.Services.Interfaces;
 using System.Net.Http;
 
@@ -18,7 +19,8 @@ namespace PortfolioApp.Controllers
 		public readonly IUserService _UserService;
 		private readonly HttpClient HttpClient;
 		private readonly AppDbContext _Context;
-		public AccountController(HttpClient httpClient, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService, AppDbContext context)
+		private readonly IUserGetter _UserGetter;
+		public AccountController(IUserGetter UserGetter, HttpClient httpClient, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService, AppDbContext context)
 		{
 			_UserManager = userManager;
 			_SignInManager = signInManager;
@@ -26,6 +28,7 @@ namespace PortfolioApp.Controllers
 			_UserService = userService;
 			this.HttpClient = httpClient;
 			_Context = context;
+			_UserGetter = UserGetter;
 		}
 
 		[HttpGet]
@@ -84,7 +87,7 @@ namespace PortfolioApp.Controllers
 					AssetCode = AssetBody.AssetCode,
 					Ammount = AssetBody.Ammount,
 					TypeOfAsset = AssetBody.TypeOfAsset,
-					UserId = _UserService.GetLoggedUser().Result.Id,
+					UserId = _UserGetter.GetLoggedUser().Result.Id,
 				};
 				await _DbService.AddAssetToDb(Model);
 				return Redirect("/");
@@ -95,19 +98,15 @@ namespace PortfolioApp.Controllers
 		[Route("/YourAccount")]
 		public async Task<IActionResult> Account()
 		{
-			var User = await GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 			ViewBag.UserName = User.UserName;
 
 			return View();
 		}
-		public async Task<UserModel> GetLoggedUser()
-		{
-			var User = await _UserManager.GetUserAsync(base.User);
-			return User;
-		}
+
 		public async Task<double> GetAmmountOfAsset(string AssetCode)
 		{
-			var User = await GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 			if (User != null)
 			{
 
@@ -124,7 +123,7 @@ namespace PortfolioApp.Controllers
 		public async Task<Dictionary<string, double>> GetUserAssets()
 		{
 
-			var User = await GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 
 
 			var Dict = new Dictionary<string, double>();
@@ -165,7 +164,7 @@ namespace PortfolioApp.Controllers
 		public async Task<Dictionary<string, double>> GetUserAssetsByType(string Type)
 		{
 
-			var User = await GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 
 			var Dict = new Dictionary<string, double>();
 			if (User != null)
@@ -201,7 +200,7 @@ namespace PortfolioApp.Controllers
 		}
 		public async Task<bool> CheckPassword(string Password)
 		{
-			var User = await GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 			var PasswordCheck = await _UserManager.CheckPasswordAsync(User, Password);
 			{
 				if (PasswordCheck)
@@ -213,7 +212,7 @@ namespace PortfolioApp.Controllers
 		}
 		public async Task ChangePassword(string CurrentPassword, string NewPassword)
 		{
-			var User = await GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 			if (User != null)
 			{
 				var Result = await _UserManager.ChangePasswordAsync(User, CurrentPassword, NewPassword);
@@ -226,7 +225,7 @@ namespace PortfolioApp.Controllers
 
 		public async Task ChangeUsername(string CurrentPassword, string NewUser)
 		{
-			var User = GetLoggedUser().Result;
+			var User = _UserGetter.GetLoggedUser().Result;
 			if (User != null)
 			{
 				var PasswordCheck = await _UserManager.CheckPasswordAsync(User, CurrentPassword);

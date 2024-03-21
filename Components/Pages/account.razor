@@ -2,16 +2,18 @@
 @using Microsoft.Build.Framework
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
+@using PortfolioApp.Services.Interfaces
 @inject IUserService _UserService;
 @inject IJSRuntime JSRuntime
+@inject IUserGetter _UserGetter;
 <PageTitle>Your Account</PageTitle>
 <HeadContent>
     <link href="/css/AddHomeStyle.css" rel="stylesheet" />
 </HeadContent>
 <div id="UserData-Container">
-    @if(USER != null)
+    @if(User != null)
     {
-        <h1 class="UserData" id="UserName">Your account name: <strong>@USER.UserName</strong></h1>
+        <h1 class="UserData" id="UserName">Your account name: <strong>@User.UserName</strong></h1>
     }
     
     <br />
@@ -37,13 +39,13 @@
 </div>
 
 @code {
-    private UserModel USER;
+    private UserModel User;
     public ChangePassword model = new ChangePassword();
     private string Message;
 
     protected override async Task OnInitializedAsync()
     {
-        USER = await _UserService.GetLoggedUser();
+        User = await _UserGetter.GetLoggedUser();
     }
 
     private async Task ChangePasswordFunc()

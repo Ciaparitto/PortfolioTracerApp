@@ -4,6 +4,7 @@
 @inject IDbService _DbService;
 @inject IUserService _userService;
 @inject HttpClient _httpClient;
+@inject IUserGetter _UserGetter;
 
 @using Microsoft.AspNetCore.Antiforgery
 @using Microsoft.AspNetCore.Authorization
@@ -16,6 +17,7 @@
 <HeadContent>
 	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
 </HeadContent>
+
 <div id="form">
 
 <EditForm Model="@model" OnSubmit="@AddAssetfunc">
@@ -69,11 +71,13 @@
 	public Dictionary<string, string> Dict;
 	public string AddingMessage = "";
 	private Dictionary<string, string> AllAssetsDict;
-
+	private UserModel LoggedUser;
 
 
 	protected override async Task OnInitializedAsync()
 	{
+		LoggedUser = await _UserGetter.GetLoggedUser();
+
 		MetalDict = await _DbService.GetMetalDict();
 
 		CurrencyDict = await _DbService.GetCurrencyDict();
@@ -119,9 +123,7 @@
 		{
 			try
 			{
-			
-				var User = await _userService.GetLoggedUser();
-				model.UserId = User.Id;
+				model.UserId = LoggedUser.Id;
 				await _DbService.AddAssetToDb(model);
 				await ChangeMessage($"successfully added {Dict[model.AssetCode]} in number {model.Ammount}");
 			}

@@ -7,12 +7,19 @@
 @using PortfolioApp.Services
 @using PortfolioApp.Services.Interfaces
 @inject IUserService _UserService;
-@inject IAssetGetter 
+@inject IAssetGetter _AssetService;
+@inject IUserGetter _UserGetter;
 <PageTitle>Your Assets</PageTitle>
 <HeadContent>
 	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
 </HeadContent>
+
+
 <div id="AssetSelect">
+	@if (LoggedUser != null)
+	{
+		<p>You have @LoggedUser.Money $</p>
+	}
 	<p>
 		Choose type <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
 			<option class="option" value="All">All</option>
@@ -39,8 +46,8 @@
 	public AssetModel model = new AssetModel();
 	protected override async Task OnInitializedAsync()
 	{
-		LoggedUser = await _UserService.GetLoggedUser();
-		UserAssetList = await _UserService.GetUserAssets();
+		LoggedUser = await _UserGetter.GetLoggedUser();
+		UserAssetList = await _AssetService.GetUserAssets();
 	}
 
 	private async Task UpdateSelectedType(ChangeEventArgs Event)
@@ -48,19 +55,19 @@
 		selectedType = Event.Value?.ToString();
 		if (selectedType == "Currency")
 		{
-			UserAssetList = await _UserService.GetUserAssetsByType("Currency");		
+			UserAssetList = await _AssetService.GetUserAssetsByType("Currency");
 		}
 		else if (selectedType == "Metal")
 		{
-			UserAssetList = await _UserService.GetUserAssetsByType("Metal");		
+			UserAssetList = await _AssetService.GetUserAssetsByType("Metal");
 		}
 		else if (selectedType == "CryptoCurrency")
 		{
-			UserAssetList = await _UserService.GetUserAssetsByType("CryptoCurrency");		
+			UserAssetList = await _AssetService.GetUserAssetsByType("CryptoCurrency");
 		}
 		else if(selectedType == "All")
 		{
-			UserAssetList = await _UserService.GetUserAssets();
+			UserAssetList = await _AssetService.GetUserAssets();
 		}
 		StateHasChanged();
 	}

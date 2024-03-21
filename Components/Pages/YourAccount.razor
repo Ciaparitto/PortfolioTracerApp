@@ -1,7 +1,9 @@
 ﻿@page "/YourAccount2"
 @inject IUserService _UserService;
+@inject IUserGetter _UserGetter;
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
+@using PortfolioApp.Services.Interfaces
 
 <PageTitle>Your Profile</PageTitle>
 <HeadContent>
@@ -33,10 +35,8 @@
 	public UserModel LoggedUser;
 	protected override async Task OnInitializedAsync()
 	{
-		LoggedUser = await _UserService.GetLoggedUser();
-
-		
-		
+		LoggedUser = await _UserGetter.GetLoggedUser();
+	
 	}
 	
 }

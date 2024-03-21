@@ -6,7 +6,7 @@ namespace PortfolioApp.Components.Services.Interfaces
 	public interface IUserService
 	{
 
-		public Task<UserModel> GetLoggedUser();
+
 
 		public Task ChangePassword(string currentPassword, string newPassword);
 

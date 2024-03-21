@@ -9,11 +9,11 @@ namespace PortfolioApp.Services
 	public class DbService : IDbService
 	{
 		private readonly AppDbContext _Context;
-		private readonly IUserService _userService;
-		public DbService(AppDbContext context,IUserService userService) 
+		private readonly IUserGetter _UserGetter;
+		public DbService(AppDbContext context, IUserGetter UsetGetter)
 		{
 			_Context = context;
-			_userService = userService;
+			_UserGetter = UsetGetter;
 
 		}
 		public async Task AddAssetToDb(AssetModel model)
@@ -100,11 +100,11 @@ namespace PortfolioApp.Services
 		}
 		public async Task<List<TransactionModel>> GetUserTransactions()
 		{
-			var USER = await _userService.GetLoggedUser();
+			var USER = await _UserGetter.GetLoggedUser();
 			var List = await _Context.Transactions.Where(x => x.UserId == USER.Id).OrderByDescending(x => x.date).ToListAsync();
 			return List;
-		
-			
+
+
 		}
 		public async Task AddTransactionToDb(TransactionModel model)
 		{

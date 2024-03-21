@@ -27,8 +27,8 @@ namespace PortfolioApp.Controllers
 			{
 				var Response = HttpClient.GetAsync(url).Result;
 				string Result = await Response.Content.ReadAsStringAsync();
-				var Metal = JsonConvert.DeserializeObject<CurrencyModel>(Result);
-				return Metal;
+				var Currency = JsonConvert.DeserializeObject<CurrencyModel>(Result);
+				return Currency;
 			}
 			catch (Exception Error)
 			{

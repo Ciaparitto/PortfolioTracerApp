@@ -8,6 +8,9 @@
 @inject IDbService _DbService;
 @inject IUserService _UserService;
 @inject HttpClient httpclinet;
+@inject IAssetGetter _AssetGetter;
+@inject IUserGetter _UserGetter;
+
 @attribute [Authorize]
 <PageTitle>Home</PageTitle>
 <HeadContent>
@@ -60,8 +63,9 @@
 	private Dictionary<string, string> AllAssetsDict;
 	protected override async Task OnInitializedAsync()
 	{
-		LoggedUser = await _UserService.GetLoggedUser();
 
+		LoggedUser = await _UserGetter.GetLoggedUser();
+		var nwm = await _AssetGetter.GetAssetsValue("XAU",1,LoggedUser);
 		MetalDict = await _DbService.GetMetalDict();
 
 		CurrencyDict = await _DbService.GetCurrencyDict();
@@ -75,7 +79,7 @@
 			.ToDictionary(pair => pair.Key, pair => pair.Value);
 		Dict = AllAssetsDict;
 
-		UserAssetList = await _UserService.GetUserAssets();
+		UserAssetList = await _AssetGetter.GetUserAssets();
 
 
 	}

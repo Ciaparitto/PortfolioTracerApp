@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApp.Components.Services.Interfaces;
+using PortfolioApp.Models;
 using PortfolioApp.Services.Interfaces;
+using System.Net.Http;
 
 namespace PortfolioApp.Services
 {
@@ -9,15 +11,19 @@ namespace PortfolioApp.Services
 	{
 		private readonly IUserService _UserService;
 		private readonly AppDbContext _Context;
-		public AssetGetter(IUserService UserService, AppDbContext Context)
+		private readonly IUserGetter _UserGetter;
+		private readonly HttpClient _HttpClient;
+		public AssetGetter(IUserService UserService, AppDbContext Context, IUserGetter userGetter, HttpClient httpClient)
 		{
 			_UserService = UserService;
 			_Context = Context;
+			_UserGetter = userGetter;
+			_HttpClient = httpClient;
 		}
 
 		public async Task<Dictionary<string, double>> GetUserAssets()
 		{
-			var User = await _UserService.GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 
 			var Dict = new Dictionary<string, double>();
 			if (User != null)
@@ -50,7 +56,7 @@ namespace PortfolioApp.Services
 		}
 		public async Task<Dictionary<string, double>> GetUserAssetsByType(string Type)
 		{
-			var User = await _UserService.GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 
 			var Dict = new Dictionary<string, double>();
 			if (User != null)
@@ -83,7 +89,7 @@ namespace PortfolioApp.Services
 		}
 		public async Task<double> GetAmmountOfAsset(string AssetCode, string typeOfAsset)
 		{
-			var User = await _UserService.GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 			if (User != null)
 			{
 				var AssetList = _Context.Transactions.Where(x => x.AssetCode == AssetCode && x.TypeOfAsset == typeOfAsset && x.UserId == User.Id).ToList();
@@ -102,6 +108,18 @@ namespace PortfolioApp.Services
 				return Ammount;
 			}
 			return 0;
+		}
+		public Task<double> GetAssetsValue(string AssetCode, double Ammount, UserModel User)
+		{
+			DateTime CurrentDate = DateTime.Now;
+			string FormattedDate = CurrentDate.ToString("dd-MM-yyyy");
+			HttpResponseMessage Response = _HttpClient.GetAsync($"/Api/GetRatesByDay?Date={FormattedDate}").Result;
+			if (Response.IsSuccessStatusCode)
+			{
+
+			}
+
+			return null;
 		}
 	}
 }

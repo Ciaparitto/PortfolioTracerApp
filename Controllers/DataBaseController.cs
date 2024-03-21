@@ -3,24 +3,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
+using PortfolioApp.Services;
 using PortfolioApp.Services.Interfaces;
 
 namespace PortfolioApp.Controllers
 {
 	public class DataBaseController : Controller
 	{
-		public readonly IUserService _UserService;
+		private readonly IUserService _UserService;
 		private readonly AppDbContext _Context;
-		public DataBaseController(IUserService userService, AppDbContext context)
+		private readonly IUserGetter _UserGetter;
+		public DataBaseController(IUserService userService, AppDbContext context,IUserGetter userGetter)
 		{
 
 			_UserService = userService;
 			_Context = context;
+			_UserGetter = userGetter;
 		}
 
 		public async Task<double> GetAmmountOfAsset(string AssetCode)
 		{
-			var User = await _UserService.GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 			if (User != null)
 			{
 
@@ -37,7 +40,7 @@ namespace PortfolioApp.Controllers
 		public async Task<Dictionary<string, double>> GetUserAssets()
 		{
 
-			var User = await _UserService.GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 
 
 			var Dict = new Dictionary<string, double>();
@@ -78,7 +81,7 @@ namespace PortfolioApp.Controllers
 		public async Task<Dictionary<string, double>> GetUserAssetsByType(string Type)
 		{
 
-			var User = await _UserService.GetLoggedUser();
+			var User = await _UserGetter.GetLoggedUser();
 
 			var Dict = new Dictionary<string, double>();
 			if (User != null)

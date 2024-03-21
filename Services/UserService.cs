@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
+using PortfolioApp.Services.Interfaces;
 
 namespace PortfolioApp.Components.Services
 {
@@ -10,28 +11,21 @@ namespace PortfolioApp.Components.Services
 		private readonly UserManager<UserModel> _userManager;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly AppDbContext _Context;
+		private readonly IUserGetter _UserGetter;
 
-		public UserService(UserManager<UserModel> userManager, IHttpContextAccessor httpContextAccessor, AppDbContext appDbContext)
+		public UserService(IUserGetter UserGetter, UserManager<UserModel> userManager, IHttpContextAccessor httpContextAccessor, AppDbContext appDbContext)
 		{
 			_userManager = userManager;
 			_httpContextAccessor = httpContextAccessor;
 			_Context = appDbContext;
-		}
-		public async Task<UserModel> GetLoggedUser()
-		{
-			var _User = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
-			if (_User != null)
-			{
-				return _User;
-			}
-			return null;
+			_UserGetter = UserGetter;
 		}
 
 
 		public async Task<bool> CheckPassword(string password)
 		{
-			var USER = await GetLoggedUser();
-			var passwordCheck = await _userManager.CheckPasswordAsync(USER, password);
+			var User = await _UserGetter.GetLoggedUser();
+			var passwordCheck = await _userManager.CheckPasswordAsync(User, password);
 			{
 				if (passwordCheck)
 				{
@@ -42,10 +36,10 @@ namespace PortfolioApp.Components.Services
 		}
 		public async Task ChangePassword(string currentPassword, string newPassword)
 		{
-			var USER = await GetLoggedUser();
-			if (USER != null)
+			var User = await _UserGetter.GetLoggedUser();
+			if (User != null)
 			{
-				var result = await _userManager.ChangePasswordAsync(USER, currentPassword, newPassword);
+				var result = await _userManager.ChangePasswordAsync(User, currentPassword, newPassword);
 				if (result.Succeeded)
 				{
 					await _Context.SaveChangesAsync();
@@ -57,14 +51,14 @@ namespace PortfolioApp.Components.Services
 
 		{
 
-			var USER = GetLoggedUser().Result;
-			if (USER != null)
+			var User = _UserGetter.GetLoggedUser().Result;
+			if (User != null)
 			{
-				var passwordCheck = await _userManager.CheckPasswordAsync(USER, currentPassword);
+				var passwordCheck = await _userManager.CheckPasswordAsync(User, currentPassword);
 				{
 					if (passwordCheck)
 					{
-						var result = await _userManager.SetUserNameAsync(USER, newUsername);
+						var result = await _userManager.SetUserNameAsync(User, newUsername);
 						if (result.Succeeded)
 						{
 							await _Context.SaveChangesAsync();
