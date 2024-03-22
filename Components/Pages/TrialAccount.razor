@@ -1,4 +1,4 @@
-﻿@page "/YourTransactions"
+﻿@page "/TrialAccount"
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
@@ -7,18 +7,22 @@
 @inject IUserService _userService;
 @inject IAssetGetter _AssetGetter
 @inject IUserGetter _UserGetter;
+@inject AppDbContext _Context;
 <PageTitle>Your Transactions History</PageTitle>
 <HeadContent>
 	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
-</HeadContent> 
+</HeadContent>
 <div id="AddingTransaction">
-	 
+	@if (LoggedUser != null)
+	{
+		<p>You have @Math.Round(LoggedUser.Money,2) $</p>
+	}
 	<EditForm Model="@Model" OnSubmit="@AddTransactionfunc">
 		<p>
 			What do you want
 			<InputSelect @bind-Value="Model.TransactionType">
 				<option class="option" value="Deposit">Deposit</option>
-				<option class="option" value="Withdraw">Withdraw</option>				
+				<option class="option" value="Withdraw">Withdraw</option>
 			</InputSelect>
 		</p>
 		<p>
@@ -42,7 +46,7 @@
 				}
 			</InputSelect>
 		</p>
-		
+
 		@if (selectedType == "Metal")
 		{
 			<p>How many ounces do you want to @Model.TransactionType <InputNumber @bind-Value="Model.Ammount" /></p>
@@ -51,14 +55,14 @@
 		{
 			<p>How many units you want to  @Model.TransactionType<InputNumber @bind-Value="Model.Ammount" /></p>
 		}
-		
+
 		<button type="submit">@Model.TransactionType</button>
 	</EditForm>
 	<p>@InfoMessage</p>
 </div>
 
-	@if(TransactionsList !=null && TransactionsList.Count > 0)
-	{
+@if (TransactionsList != null && TransactionsList.Count > 0)
+{
 	<div id="Transaction-container">
 		<table class="TransactionTable">
 			<tr>
@@ -68,23 +72,23 @@
 				<td>Ammont</td>
 				<td>Transaction ID</td>
 			</tr>
-		@foreach(var Transaction in TransactionsList)
-		{
-			<tr>
+			@foreach (var Transaction in TransactionsList)
+			{
+				<tr>
 					<td>@Transaction.TransactionType</td>
 					<td>@Transaction.date</td>
 					<td>@Transaction.AssetCode</td>
 					<td>@Transaction.Ammount</td>
 					<td>@Transaction.Id</td>
-			</tr>
+				</tr>
 
-		
-		}
+
+			}
 		</table>
 	</div>
-	}
+}
 
-@code{
+@code {
 	private string ChoosedAssetType;
 	private string InfoMessage;
 	private UserModel LoggedUser;
@@ -101,7 +105,7 @@
 		LoggedUser = await _UserGetter.GetLoggedUser();
 		Model.TransactionType = "Deposit";
 
-		TransactionsList = await _DbService.GetUserTransactions(false);
+		TransactionsList = await _DbService.GetUserTransactions(true);
 		MetalDict = await _DbService.GetMetalDict();
 
 		CurrencyDict = await _DbService.GetCurrencyDict();
@@ -123,56 +127,67 @@
 
 		if (!string.IsNullOrEmpty(Model.AssetCode) && !string.IsNullOrEmpty(Model.TransactionType) && Model.Ammount != 0)
 		{
-			var UserAssetAmmount = await _AssetGetter.GetAmmountOfAsset(Model.AssetCode, Model.TypeOfAsset,false);
+			var TransactionValue = await _AssetGetter.GetAssetsValue(Model.AssetCode, Model.Ammount, LoggedUser);
+			var UserAssetAmmount = await _AssetGetter.GetAmmountOfAsset(Model.AssetCode, Model.TypeOfAsset, true);
 			if (Model.TransactionType == "Withdraw" && Model.Ammount > UserAssetAmmount)
 			{
 				await ChangeMessage($"You dont have {Model.Ammount} {Model.AssetCode}");
 			}
-			else
-			{				
-				try
+			{
+				if(Model.TransactionType == "Withdraw")
 				{
-					var User = await _UserGetter.GetLoggedUser();
-					Model.UserId = User.Id;
-					Model.IsTrialTransaction = false;
+					LoggedUser.Money += TransactionValue;
+					Model.UserId = LoggedUser.Id;
+					Model.IsTrialTransaction = true;
 					await _DbService.AddTransactionToDb(Model);
-					TransactionsList = await _DbService.GetUserTransactions(false);
+					TransactionsList = await _DbService.GetUserTransactions(true);
+					StateHasChanged();
+					
+				
 					await ChangeMessage($"successfully {Model.TransactionType} {Dict[Model.AssetCode]} in number {Model.Ammount}");
 				}
-				catch (Exception ex)
+				if(Model.TransactionType == "Deposit" && LoggedUser.Money >= TransactionValue)
 				{
-					await ChangeMessage($"error {ex}");
-
+					LoggedUser.Money -= TransactionValue;
+					Model.UserId = LoggedUser.Id;
+					Model.IsTrialTransaction = true;
+					await _DbService.AddTransactionToDb(Model);
+					TransactionsList = await _DbService.GetUserTransactions(true);
+					StateHasChanged();
+					
+					await ChangeMessage($"successfully {Model.TransactionType} {Dict[Model.AssetCode]} in number {Model.Ammount}");
 				}
+			
 			}
-		}	
+		
+		}
 		else
 		{
 			await ChangeMessage("you have to insert data");
 
 		}
-		
+
 	}
 	public async Task UpdateSelectedType(ChangeEventArgs Event)
 	{
-		
+
 		selectedType = Event.Value?.ToString();
 		if (selectedType == "Currency")
 		{
 			Dict = CurrencyDict;
-		
+
 		}
 		else if (selectedType == "Metal")
 		{
 			Dict = MetalDict;
-			
+
 		}
 		else if (selectedType == "CryptoCurrency")
 		{
 			Dict = CryptoCurrencyDict;
-			
+
 		}
-		
+
 		StateHasChanged();
 	}
 	public async Task ChangeMessage(string Message)
@@ -182,5 +197,9 @@
 		await Task.Delay(5000);
 		StateHasChanged();
 		InfoMessage = "";
+	}
+	public async Task AddTransactionToDb()
+	{
+		
 	}
 }

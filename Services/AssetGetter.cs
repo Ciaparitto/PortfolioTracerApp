@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 using PortfolioApp.Services.Interfaces;
@@ -87,12 +89,12 @@ namespace PortfolioApp.Services
 			}
 			return Dict;
 		}
-		public async Task<double> GetAmmountOfAsset(string AssetCode, string typeOfAsset)
+		public async Task<double> GetAmmountOfAsset(string AssetCode, string typeOfAsset, bool IsTrial)
 		{
 			var User = await _UserGetter.GetLoggedUser();
 			if (User != null)
 			{
-				var AssetList = _Context.Transactions.Where(x => x.AssetCode == AssetCode && x.TypeOfAsset == typeOfAsset && x.UserId == User.Id).ToList();
+				var AssetList = _Context.Transactions.Where(x => x.AssetCode == AssetCode && x.TypeOfAsset == typeOfAsset && x.UserId == User.Id && x.IsTrialTransaction == IsTrial).ToList();
 				double Ammount = 0;
 				foreach (var Asset in AssetList)
 				{
@@ -109,17 +111,20 @@ namespace PortfolioApp.Services
 			}
 			return 0;
 		}
-		public Task<double> GetAssetsValue(string AssetCode, double Ammount, UserModel User)
+		public async Task<double> GetAssetsValue(string AssetCode, double Ammount, UserModel User)
 		{
-			DateTime CurrentDate = DateTime.Now;
-			string FormattedDate = CurrentDate.ToString("dd-MM-yyyy");
-			HttpResponseMessage Response = _HttpClient.GetAsync($"/Api/GetRatesByDay?Date={FormattedDate}").Result;
+			DateTime CurrentDate = DateTime.Now.AddDays(-1);
+			string FormattedDate = CurrentDate.ToString("yyyy-MM-dd");
+			HttpResponseMessage Response = _HttpClient.GetAsync($"/Api/GetRatesLasted").Result;
 			if (Response.IsSuccessStatusCode)
 			{
-
+				string Result = await Response.Content.ReadAsStringAsync();
+				var Currency = JsonConvert.DeserializeObject<CurrencyModel>(Result);
+				double Value = ((double)Currency.Rates[AssetCode]) * Ammount;
+				//Value = 1 / Value;
+				return Value;
 			}
-
-			return null;
+			return 0;
 		}
 	}
 }

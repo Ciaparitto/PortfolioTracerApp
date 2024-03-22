@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.Identity.Client;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PortfolioApp.Models
 {
@@ -10,6 +11,7 @@ namespace PortfolioApp.Models
 		public string TypeOfAsset { get; set; }
 		public string AssetCode { get; set; }
 		public double Ammount { get; set; }
+		public bool IsTrialTransaction { get; set; }
 
 		[ForeignKey("UserId")]
 		public string UserId { get; set; }
