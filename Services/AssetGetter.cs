@@ -23,14 +23,14 @@ namespace PortfolioApp.Services
 			_HttpClient = httpClient;
 		}
 
-		public async Task<Dictionary<string, double>> GetUserAssets()
+		public async Task<Dictionary<string, double>> GetUserAssets(bool IsTrial)
 		{
 			var User = await _UserGetter.GetLoggedUser();
 
 			var Dict = new Dictionary<string, double>();
 			if (User != null)
 			{
-				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id).OrderBy(x => x.date).ToList();
+				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id && x.IsTrialTransaction == IsTrial).OrderBy(x => x.date).ToList();
 				foreach (var Asset in AssetList)
 				{
 					if (!Dict.ContainsKey(Asset.AssetCode))
@@ -113,14 +113,13 @@ namespace PortfolioApp.Services
 		}
 		public async Task<double> GetAssetsValue(string AssetCode, double Ammount, UserModel User)
 		{
-			DateTime CurrentDate = DateTime.Now.AddDays(-1);
-			string FormattedDate = CurrentDate.ToString("yyyy-MM-dd");
 			HttpResponseMessage Response = _HttpClient.GetAsync($"/Api/GetRatesLasted").Result;
 			if (Response.IsSuccessStatusCode)
 			{
 				string Result = await Response.Content.ReadAsStringAsync();
 				var Currency = JsonConvert.DeserializeObject<CurrencyModel>(Result);
-				double Value = ((double)Currency.Rates[AssetCode]) * Ammount;
+				var Rate = 1 / ((double)Currency.Rates[AssetCode]);
+				double Value = Rate * Ammount;
 				//Value = 1 / Value;
 				return Value;
 			}

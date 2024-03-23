@@ -47,7 +47,6 @@
 </script>
 @code{
 	public string PickedType;
-	public Dictionary<string, double> UserAssetList;
 	public AssetModel model = new AssetModel();
 	public string selectedType = string.Empty;
 	public double MetalPrice;
@@ -78,10 +77,6 @@
 			.Concat(CryptoCurrencyDict)
 			.ToDictionary(pair => pair.Key, pair => pair.Value);
 		Dict = AllAssetsDict;
-
-		UserAssetList = await _AssetGetter.GetUserAssets();
-
-
 	}
 
 	private async Task UpdateSelectedType(ChangeEventArgs Event)
@@ -101,17 +96,11 @@
 		{
 			Dict = CryptoCurrencyDict;
 			PickedType = "CryptoCurrency";
-
 		}
 		else if (selectedType == "All")
 		{
 			Dict = AllAssetsDict;
 			PickedType = "All";
-
-		
 		}
-	}
-	
-	
-	
+	}	
 }

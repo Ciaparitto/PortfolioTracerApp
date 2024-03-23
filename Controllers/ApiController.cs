@@ -16,7 +16,7 @@ namespace PortfolioApp.Controllers
 		{
 			this.HttpClient = httpClient;
 			httpClient.Timeout = TimeSpan.FromSeconds(30);
-			_ApiKey = "f293ebc23c1ab8f0ef5d382a2d8b313e";
+			_ApiKey = "55264722ba302e9aa8621f3cdcfdef7c";
 		}
 
 		public async Task<CurrencyModel> GetRatesByDay(string Date)
@@ -42,7 +42,7 @@ namespace PortfolioApp.Controllers
 		{
 
 			HttpClient.DefaultRequestHeaders.Add("x-access-token", _ApiKey);
-			string url = $"\thttps://api.metalpriceapi.com/v1/latest?api_key={_ApiKey}";
+			string url = $"https://api.metalpriceapi.com/v1/latest?api_key={_ApiKey}";
 
 			try
 			{

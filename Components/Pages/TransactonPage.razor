@@ -100,14 +100,10 @@
 	{
 		LoggedUser = await _UserGetter.GetLoggedUser();
 		Model.TransactionType = "Deposit";
-
 		TransactionsList = await _DbService.GetUserTransactions(false);
 		MetalDict = await _DbService.GetMetalDict();
-
 		CurrencyDict = await _DbService.GetCurrencyDict();
-
 		CryptoCurrencyDict = await _DbService.GetCryptoCurrencyDict();
-
 
 		AllAssetsDict = CurrencyDict
 			.Concat(MetalDict)
@@ -115,43 +111,35 @@
 			.ToDictionary(pair => pair.Key, pair => pair.Value);
 
 		Dict = AllAssetsDict;
-
 	}
 
 	public async Task AddTransactionfunc()
 	{
 
-		if (!string.IsNullOrEmpty(Model.AssetCode) && !string.IsNullOrEmpty(Model.TransactionType) && Model.Ammount != 0)
+		if (!string.IsNullOrEmpty(Model.AssetCode) && !string.IsNullOrEmpty(Model.TransactionType) && Model.Ammount > 0)
 		{
 			var UserAssetAmmount = await _AssetGetter.GetAmmountOfAsset(Model.AssetCode, Model.TypeOfAsset,false);
 			if (Model.TransactionType == "Withdraw" && Model.Ammount > UserAssetAmmount)
 			{
-				await ChangeMessage($"You dont have {Model.Ammount} {Model.AssetCode}");
+				ChangeMessage($"You dont have {Model.Ammount} {Model.AssetCode}");
 			}
 			else
 			{				
-				try
-				{
-					var User = await _UserGetter.GetLoggedUser();
-					Model.UserId = User.Id;
-					Model.IsTrialTransaction = false;
-					await _DbService.AddTransactionToDb(Model);
-					TransactionsList = await _DbService.GetUserTransactions(false);
-					await ChangeMessage($"successfully {Model.TransactionType} {Dict[Model.AssetCode]} in number {Model.Ammount}");
-				}
-				catch (Exception ex)
-				{
-					await ChangeMessage($"error {ex}");
+				var User = await _UserGetter.GetLoggedUser();
+				Model.UserId = User.Id;
+				Model.IsTrialTransaction = false;
+				await _DbService.AddTransactionToDb(Model);
 
-				}
+				ChangeMessage($"successfully {Model.TransactionType} {Dict[Model.AssetCode]} in number {Model.Ammount}");	
 			}
 		}	
 		else
 		{
-			await ChangeMessage("you have to insert data");
-
-		}
-		
+			ChangeMessage("you have to insert data");
+		}		
+		TransactionsList = await _DbService.GetUserTransactions(true);
+		Model = new TransactionModel { TransactionType = "Deposit" };
+		StateHasChanged();
 	}
 	public async Task UpdateSelectedType(ChangeEventArgs Event)
 	{
@@ -175,11 +163,11 @@
 		
 		StateHasChanged();
 	}
-	public async Task ChangeMessage(string Message)
+	public void ChangeMessage(string Message)
 	{
 		InfoMessage = Message;
 		StateHasChanged();
-		await Task.Delay(5000);
+		Task.Delay(5000);
 		StateHasChanged();
 		InfoMessage = "";
 	}

@@ -16,10 +16,6 @@
 
 
 <div id="AssetSelect">
-	@if (LoggedUser != null)
-	{
-		<p>You have @LoggedUser.Money $</p>
-	}
 	<p>
 		Choose type <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
 			<option class="option" value="All">All</option>
@@ -47,7 +43,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		LoggedUser = await _UserGetter.GetLoggedUser();
-		UserAssetList = await _AssetService.GetUserAssets();
+		UserAssetList = await _AssetService.GetUserAssets(false);
 	}
 
 	private async Task UpdateSelectedType(ChangeEventArgs Event)
@@ -67,7 +63,7 @@
 		}
 		else if(selectedType == "All")
 		{
-			UserAssetList = await _AssetService.GetUserAssets();
+			UserAssetList = await _AssetService.GetUserAssets(false);
 		}
 		StateHasChanged();
 	}
