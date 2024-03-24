@@ -18,7 +18,6 @@ select {
 }
 body {
     background-image: linear-gradient(to top,rgb(0,13,26),rgb(0,64,128));
- 
     color: white;
 }
 input, input:focus {

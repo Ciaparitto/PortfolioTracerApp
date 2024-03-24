@@ -1,0 +1,38 @@
+﻿* {
+    color: white
+}
+
+body {
+    background-image: linear-gradient(to top,rgb(0,13,26),rgb(0,64,128));
+    color: white;
+}
+select {
+    border-radius: 20px;
+    padding: 5px;
+    margin: 5px;
+    border: none;
+    background-color: rgba(0,64,128,1);
+    width: 250px;
+    text-align: center;
+}
+#UserAssets {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#Assets-Container {
+    overflow: auto;
+    max-height: 800px;
+}
+::-webkit-scrollbar {
+    width: 12px;
+    background-color: rgba(0,0,0,0);
+}
+
+::-webkit-scrollbar-thumb {
+    width: 12px;
+    background-color: rgb(0,51,102);
+    border-radius: 15px;
+}
+

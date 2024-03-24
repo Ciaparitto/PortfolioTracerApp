@@ -10,12 +10,12 @@
 @inject AppDbContext _Context;
 <PageTitle>Your Transactions History</PageTitle>
 <HeadContent>
-	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
+	<link href="/css/TrialAccountStyle.css" rel="stylesheet" />
 </HeadContent>
 <div id="AddingTransaction">
 	@if (LoggedUser != null)
 	{
-		<p>You have @Math.Round(LoggedUser.Money,2) $</p>
+		<strong>You have @Math.Round(LoggedUser.Money, 2) $</strong>
 	}
 	<EditForm Model="@TransactionModel" OnSubmit="@AddTransactionfunc">
 		<p>
@@ -60,25 +60,28 @@
 	</EditForm>
 	<p>@InfoMessage</p>
 </div>
-<div id="AssetSelect">
-	<p>
-		Choose type <InputSelect @bind-Value="AssetModel.TypeOfAsset" @oninput="UpdateSelectedTypeAssets">
-			<option class="option" value="All">All</option>
-			<option class="option" value="Metal">Metal</option>
-			<option class="option" value="Currency">Currency</option>
-			<option class="option" value="CryptoCurrency">CryptoCurrency</option>
-		</InputSelect>
-	</p>
-</div>
-<div id="Assets-Container">
+<div id="UserAssets">
+	<div id="AssetSelect">
+		<p>
+			Choose type <InputSelect @bind-Value="AssetModel.TypeOfAsset" @oninput="UpdateSelectedTypeAssets">
+				<option class="option" value="All">All</option>
+				<option class="option" value="Metal">Metal</option>
+				<option class="option" value="Currency">Currency</option>
+				<option class="option" value="CryptoCurrency">CryptoCurrency</option>
+			</InputSelect>
+		</p>
+	</div>
 
-	@if (UserAssetList != null)
-	{
-		foreach (var asset in UserAssetList)
+	<div id="Assets-Container">
+
+		@if (UserAssetList != null)
 		{
-			<p class="Asset">@($"You own {asset.Value} units of {asset.Key}")</p>
+			foreach (var asset in UserAssetList)
+			{
+				<p class="Asset">@($"You own {asset.Value} units of {asset.Key}")</p>
+			}
 		}
-	}
+	</div>
 </div>
 @if (TransactionsList != null && TransactionsList.Count > 0)
 {
@@ -149,33 +152,37 @@
 		if (!string.IsNullOrEmpty(TransactionModel.AssetCode) && !string.IsNullOrEmpty(TransactionModel.TransactionType) && TransactionModel.Ammount > 0)
 		{
 			var TransactionValue = await _AssetGetter.GetAssetsValue(TransactionModel.AssetCode, TransactionModel.Ammount, LoggedUser);
-			var UserAssetAmmount = await _AssetGetter.GetAmmountOfAsset(TransactionModel.AssetCode, TransactionModel.TypeOfAsset, true);
-			if (TransactionModel.TransactionType == "Withdraw" && TransactionModel.Ammount > UserAssetAmmount)
+
+			TransactionModel.UserId = LoggedUser.Id;
+			TransactionModel.IsTrialTransaction = true;
+			if (TransactionModel.TransactionType == "Withdraw")
 			{
-				ChangeMessage($"You dont have {TransactionModel.Ammount} {TransactionModel.AssetCode}");
-			}
-			else
-			{
-				TransactionModel.UserId = LoggedUser.Id;
-				TransactionModel.IsTrialTransaction = true;
-				if(TransactionModel.TransactionType == "Withdraw")
+				var UserAssetAmmount = await _AssetGetter.GetAmmountOfAsset(TransactionModel.AssetCode, TransactionModel.TypeOfAsset, true);
+				if (TransactionModel.TransactionType == "Withdraw" && TransactionModel.Ammount > UserAssetAmmount)
+				{
+					ChangeMessage($"You dont have {TransactionModel.Ammount} {TransactionModel.AssetCode}");
+				}
+				else
 				{
 					LoggedUser.Money += TransactionValue;
 					await _DbService.AddTransactionToDb(TransactionModel);
 
 					ChangeMessage($"successfully {TransactionModel.TransactionType} {DictTransactions[TransactionModel.AssetCode]} in number {TransactionModel.Ammount}");
 				}
-				if(TransactionModel.TransactionType == "Deposit" && LoggedUser.Money >= TransactionValue)
-				{
-					LoggedUser.Money -= TransactionValue;
-					await _DbService.AddTransactionToDb(TransactionModel);
+			}
+			if (TransactionModel.TransactionType == "Deposit" && LoggedUser.Money >= TransactionValue)
+			{
+				LoggedUser.Money -= TransactionValue;
+				await _DbService.AddTransactionToDb(TransactionModel);
 
-					ChangeMessage($"successfully {TransactionModel.TransactionType} {DictTransactions[TransactionModel.AssetCode]} in number {TransactionModel.Ammount}");
-				}
-				else
+				ChangeMessage($"successfully {TransactionModel.TransactionType} {DictTransactions[TransactionModel.AssetCode]} in number {TransactionModel.Ammount}");	
+			}
+			else
+			{
+				if (TransactionModel.TransactionType == "Deposit" && LoggedUser.Money <= TransactionValue)
 				{
 					ChangeMessage($"You dont have enough money to buy {TransactionModel.Ammount} {DictTransactions[TransactionModel.AssetCode]}");
-				}
+				}			
 			}
 		}
 		else
@@ -209,15 +216,15 @@
 		SelectedTypeAsset = Event.Value?.ToString();
 		if (SelectedTypeAsset == "Currency")
 		{
-			UserAssetList = await _AssetGetter.GetUserAssetsByType("Currency");
+			UserAssetList = await _AssetGetter.GetUserAssetsByType("Currency",true);
 		}
 		else if (SelectedTypeAsset == "Metal")
 		{
-			UserAssetList = await _AssetGetter.GetUserAssetsByType("Metal");
+			UserAssetList = await _AssetGetter.GetUserAssetsByType("Metal", true);
 		}
 		else if (SelectedTypeAsset == "CryptoCurrency")
 		{
-			UserAssetList = await _AssetGetter.GetUserAssetsByType("CryptoCurrency");
+			UserAssetList = await _AssetGetter.GetUserAssetsByType("CryptoCurrency", true);
 		}
 		else if (SelectedTypeAsset == "All")
 		{
@@ -233,5 +240,5 @@
 		InfoMessage = "";
 		StateHasChanged();
 	}
-	
+
 }

@@ -11,10 +11,10 @@
 @inject IUserGetter _UserGetter;
 <PageTitle>Your Assets</PageTitle>
 <HeadContent>
-	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
+	<link href="/css/YourAssets.css" rel="stylesheet" />
 </HeadContent>
 
-
+<div id="UserAssets">
 <div id="AssetSelect">
 	<p>
 		Choose type <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
@@ -35,6 +35,7 @@
 		}
 	}
 </div>
+</div>
 @code{
 	public UserModel LoggedUser;
 	private Dictionary<string, double> UserAssetList;
@@ -51,15 +52,15 @@
 		selectedType = Event.Value?.ToString();
 		if (selectedType == "Currency")
 		{
-			UserAssetList = await _AssetService.GetUserAssetsByType("Currency");
+			UserAssetList = await _AssetService.GetUserAssetsByType("Currency",false);
 		}
 		else if (selectedType == "Metal")
 		{
-			UserAssetList = await _AssetService.GetUserAssetsByType("Metal");
+			UserAssetList = await _AssetService.GetUserAssetsByType("Metal", false);
 		}
 		else if (selectedType == "CryptoCurrency")
 		{
-			UserAssetList = await _AssetService.GetUserAssetsByType("CryptoCurrency");
+			UserAssetList = await _AssetService.GetUserAssetsByType("CryptoCurrency", false);
 		}
 		else if(selectedType == "All")
 		{

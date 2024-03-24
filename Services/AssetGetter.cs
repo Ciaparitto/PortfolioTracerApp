@@ -56,14 +56,14 @@ namespace PortfolioApp.Services
 			}
 			return Dict;
 		}
-		public async Task<Dictionary<string, double>> GetUserAssetsByType(string Type)
+		public async Task<Dictionary<string, double>> GetUserAssetsByType(string Type, bool IsTrial)
 		{
 			var User = await _UserGetter.GetLoggedUser();
 
 			var Dict = new Dictionary<string, double>();
 			if (User != null)
 			{
-				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id && x.TypeOfAsset == Type).OrderBy(x => x.date).ToList();
+				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id && x.TypeOfAsset == Type && x.IsTrialTransaction == IsTrial).OrderBy(x => x.date).ToList();
 				foreach (var Asset in AssetList)
 				{
 					if (!Dict.ContainsKey(Asset.AssetCode))

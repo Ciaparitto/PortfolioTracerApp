@@ -9,7 +9,7 @@
 @inject IUserGetter _UserGetter;
 <PageTitle>Your Transactions History</PageTitle>
 <HeadContent>
-	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
+	<link href="/css/YourTransactions.css" rel="stylesheet" />
 </HeadContent> 
 <div id="AddingTransaction">
 	 
@@ -124,9 +124,8 @@
 				ChangeMessage($"You dont have {Model.Ammount} {Model.AssetCode}");
 			}
 			else
-			{				
-				var User = await _UserGetter.GetLoggedUser();
-				Model.UserId = User.Id;
+			{
+				Model.UserId = LoggedUser.Id;
 				Model.IsTrialTransaction = false;
 				await _DbService.AddTransactionToDb(Model);
 
@@ -137,7 +136,7 @@
 		{
 			ChangeMessage("you have to insert data");
 		}		
-		TransactionsList = await _DbService.GetUserTransactions(true);
+		TransactionsList = await _DbService.GetUserTransactions(false);
 		Model = new TransactionModel { TransactionType = "Deposit" };
 		StateHasChanged();
 	}
@@ -163,12 +162,12 @@
 		
 		StateHasChanged();
 	}
-	public void ChangeMessage(string Message)
+	public async Task ChangeMessage(string Message)
 	{
 		InfoMessage = Message;
 		StateHasChanged();
-		Task.Delay(5000);
-		StateHasChanged();
+		await Task.Delay(5000);
 		InfoMessage = "";
+		StateHasChanged();
 	}
 }
