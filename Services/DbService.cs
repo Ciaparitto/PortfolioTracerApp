@@ -98,14 +98,7 @@ namespace PortfolioApp.Services
 			};
 			return CryptoDict;
 		}
-		public async Task<List<TransactionModel>> GetUserTransactions(bool IsTrialTransaction)
-		{
-			var USER = await _UserGetter.GetLoggedUser();
-			var List = await _Context.Transactions.Where(x => x.UserId == USER.Id && x.IsTrialTransaction == IsTrialTransaction).OrderByDescending(x => x.date).ToListAsync();
-			return List;
-
-
-		}
+		
 		public async Task AddTransactionToDb(TransactionModel model)
 		{
 			await _Context.Transactions.AddAsync(model);

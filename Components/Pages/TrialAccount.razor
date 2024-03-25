@@ -8,6 +8,7 @@
 @inject IAssetGetter _AssetGetter
 @inject IUserGetter _UserGetter;
 @inject AppDbContext _Context;
+@inject ITransactionGetter _TransactionGetter;
 <PageTitle>Your Transactions History</PageTitle>
 <HeadContent>
 	<link href="/css/TrialAccountStyle.css" rel="stylesheet" />
@@ -130,7 +131,7 @@
 		TransactionModel.TransactionType = "Deposit";
 
 		UserAssetList = await _AssetGetter.GetUserAssets(true);
-		TransactionsList = await _DbService.GetUserTransactions(true);
+		TransactionsList = await _TransactionGetter.GetUserTransactions(true);
 		MetalDict = await _DbService.GetMetalDict();
 
 		CurrencyDict = await _DbService.GetCurrencyDict();
@@ -189,7 +190,7 @@
 		{
 			ChangeMessage("you have to insert data");
 		}
-		TransactionsList = await _DbService.GetUserTransactions(true);
+		TransactionsList = await _TransactionGetter.GetUserTransactions(true);
 		TransactionModel = new TransactionModel { TransactionType = "Deposit" };
 		StateHasChanged();
 	}

@@ -16,8 +16,8 @@ namespace PortfolioApp.Services
 		}
 		public async Task<UserModel> GetLoggedUser()
 		{
-			var _User = await _UserManager.GetUserAsync(_HttpContextAccessor.HttpContext.User);
-			return _User;
+			var User = await _UserManager.GetUserAsync(_HttpContextAccessor.HttpContext.User);
+			return User;
 		}
 
 	}

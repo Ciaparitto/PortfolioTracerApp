@@ -13,25 +13,13 @@ select {
 .option {
     background-color: rgba(0,64,128,1);
     border-radius: 20px;
-    border: none;
-   
+    border: none;   
 }
 body {
     background-image: linear-gradient(to top,rgb(0,13,26),rgb(0,64,128));
     color: white;
 }
-input, input:focus {
-    outline: none;
-    background-color: rgba(0,64,128,1);
-    border-radius: 20px;
-    margin: 10px;
-    border: none;
-    padding: 5px;
-    text-align:center;
-}
-input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: none
- }
+
 button {
     background-color: rgba(0,64,128,1);
     border-radius: 20px;
@@ -50,21 +38,6 @@ button {
     border-radius: 15px;
 }
 
-#Assets-Container, #form, #AssetSelect, #UserData-Container {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-#form {
-    height: 90vh;
-}
-#UserData-Container {
-    
-}
-#AddMessage {
-    margin: 50px;
-}
 .Home-Buttons{
  margin-left:5%;
  margin-top:5%;
@@ -84,27 +57,4 @@ button {
     font-weight:bold;
     margin:3%;
     text-align:center;
-}
-.Asset {
-    font-weight: bold;
-}
-
-#Transaction-container {
-    background-color: rgba(0,64,128,1);
-    padding: 10px;
-    border-radius: 20px;
-}
-.TransactionTable {
-    width: 100%;
-    border-collapse: collapse;
-}
-.TransactionTable tr, .TransactionTable td{
- text-align:center;
-}
-#UserName {
-    font-size: 200%;
-}
-.Account-button {
-
-    margin: 10px;
 }

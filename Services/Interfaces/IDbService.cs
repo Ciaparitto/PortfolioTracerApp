@@ -8,7 +8,6 @@ namespace PortfolioApp.Services.Interfaces
 		public Task<Dictionary<string, string>> GetMetalDict();
 		public Task<Dictionary<string, string>> GetCurrencyDict();
 		public Task<Dictionary<string, string>> GetCryptoCurrencyDict();
-		public Task<List<TransactionModel>> GetUserTransactions(bool IsTrialTransaction);
 		public Task AddTransactionToDb(TransactionModel model);
 	}
 }

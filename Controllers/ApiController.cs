@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
+using PortfolioApp.Services.Interfaces;
 using System.Net.Http;
 
 namespace PortfolioApp.Controllers
@@ -11,12 +12,15 @@ namespace PortfolioApp.Controllers
 	{
 		private readonly HttpClient HttpClient;
 		private readonly string _ApiKey;
-
-		public ApiController(HttpClient httpClient)
+		private readonly ISecretsGetter _SecretGetter;
+		public ApiController(HttpClient httpClient,ISecretsGetter SecretsGetter)
 		{
 			this.HttpClient = httpClient;
 			httpClient.Timeout = TimeSpan.FromSeconds(30);
-			_ApiKey = "55264722ba302e9aa8621f3cdcfdef7c";
+			_SecretGetter = SecretsGetter;
+			//_ApiKey = "f57e62e39a31c96da58a32fdd1744049";
+			_ApiKey = _SecretGetter.GetSecret("ApiKey");
+			Console.WriteLine(_ApiKey);
 		}
 
 		public async Task<CurrencyModel> GetRatesByDay(string Date)

@@ -17,7 +17,7 @@ builder.Services.AddServerSideBlazor(options =>
 {
 	options.DetailedErrors = true;
 });
-// Add services to the container.
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
@@ -29,9 +29,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDbService, DbService>();
 builder.Services.AddScoped<IAssetGetter, AssetGetter>();
 builder.Services.AddScoped<IUserGetter, UserGetter>();
+builder.Services.AddScoped<ITransactionGetter, TransactionGetter>();
+builder.Services.AddScoped<ISecretsGetter,SecretGetter>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["BaseUrl"]) });
+
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-	options.UseSqlServer(@"Data Source=DESKTOP-R5C9EQ0\SQLEXPRESS;TrustServerCertificate=True;Initial Catalog=DbPortfoilo;Integrated Security=True"),
+	options.UseSqlServer(@$"Data Source=DESKTOP-R5C9EQ0\\SQLEXPRESS;TrustServerCertificate=True;Initial Catalog=DbPortfoilo;Integrated Security=True"),
 	ServiceLifetime.Scoped);
 
 builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
@@ -51,7 +55,6 @@ if (!app.Environment.IsDevelopment())
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
-
 
 
 app.UseHttpsRedirection();

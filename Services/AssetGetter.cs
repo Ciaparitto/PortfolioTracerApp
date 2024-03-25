@@ -120,7 +120,6 @@ namespace PortfolioApp.Services
 				var Currency = JsonConvert.DeserializeObject<CurrencyModel>(Result);
 				var Rate = 1 / ((double)Currency.Rates[AssetCode]);
 				double Value = Rate * Ammount;
-				//Value = 1 / Value;
 				return Value;
 			}
 			return 0;

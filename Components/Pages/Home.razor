@@ -14,7 +14,7 @@
 @attribute [Authorize]
 <PageTitle>Home</PageTitle>
 <HeadContent>
-	<link href="/css/AddHomeStyle.css" rel="stylesheet" />
+	<link href="/css/HomeStyle.css" rel="stylesheet" />
 </HeadContent>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
@@ -43,34 +43,25 @@
 
 
 <script>
-	//document.getElementById("weekButton").click();
+	document.getElementById("weekButton").click();
 </script>
 @code{
-	public string PickedType;
-	public AssetModel model = new AssetModel();
-	public string selectedType = string.Empty;
-	public double MetalPrice;
-	public double AmonutOfEUR = 20;
-	public double AmmountOfPLN = 30;
-	public string CurrencyWorth;
-	public UserModel LoggedUser;
+	private string PickedType;
+	private AssetModel model = new AssetModel();
+	private string selectedType = string.Empty;
+	private UserModel LoggedUser;
 
-	public Dictionary<string, string> MetalDict;
-	public Dictionary<string, string> CurrencyDict;
-	public Dictionary<string, string> CryptoCurrencyDict;
-	public Dictionary<string, string> Dict;
+	private Dictionary<string, string> MetalDict;
+	private Dictionary<string, string> CurrencyDict;
+	private Dictionary<string, string> CryptoCurrencyDict;
+	private Dictionary<string, string> Dict;
 	private Dictionary<string, string> AllAssetsDict;
 	protected override async Task OnInitializedAsync()
 	{
-
 		LoggedUser = await _UserGetter.GetLoggedUser();
-		var nwm = await _AssetGetter.GetAssetsValue("XAU",1,LoggedUser);
 		MetalDict = await _DbService.GetMetalDict();
-
 		CurrencyDict = await _DbService.GetCurrencyDict();
-
 		CryptoCurrencyDict = await _DbService.GetCryptoCurrencyDict();
-
 
 		AllAssetsDict = CurrencyDict
 			.Concat(MetalDict)
