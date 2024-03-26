@@ -16,7 +16,7 @@ namespace PortfolioApp.Controllers
 		private readonly UserManager<UserModel> _UserManager;
 		private readonly SignInManager<UserModel> _SignInManager;
 		private readonly IDbService _DbService;
-		public readonly IUserService _UserService;
+		private readonly IUserService _UserService;
 		private readonly HttpClient HttpClient;
 		private readonly AppDbContext _Context;
 		private readonly IUserGetter _UserGetter;

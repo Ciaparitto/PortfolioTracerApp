@@ -10,6 +10,8 @@ using PortfolioApp;
 using Microsoft.EntityFrameworkCore;
 using PortfolioApp.Services.Interfaces;
 using PortfolioApp.Services;
+using NuGet.Configuration;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,8 @@ builder.Services.AddServerSideBlazor(options =>
 	options.DetailedErrors = true;
 });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddOptions();
+var _AppSettings = builder.Configuration.GetSection("AppSettings").Get<AppSettings>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddAntiforgery(o => o.HeaderName = "X-CSRF-TOKEN");
@@ -33,11 +36,9 @@ builder.Services.AddScoped<ITransactionGetter, TransactionGetter>();
 builder.Services.AddScoped<ISecretsGetter,SecretGetter>();
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["BaseUrl"]) });
 
-
 builder.Services.AddDbContext<AppDbContext>(options =>
-	options.UseSqlServer(@$"Data Source=DESKTOP-R5C9EQ0\\SQLEXPRESS;TrustServerCertificate=True;Initial Catalog=DbPortfoilo;Integrated Security=True"),
+	options.UseSqlServer(_AppSettings.ConnectionString),
 	ServiceLifetime.Scoped);
-
 builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
 {
 	options.Password.RequireDigit = false;
@@ -70,3 +71,8 @@ app.MapControllerRoute(
 	   pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+public class AppSettings
+{
+	public string ApiKey { get; set; }
+	public string ConnectionString { get; set; }
+}
