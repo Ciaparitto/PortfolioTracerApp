@@ -79,9 +79,7 @@ async function GetData(NumberOfDays, typeOfAsset)
         const NewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1 - i); // Day - 1 becouse API have errors sometimes when i call today date
         const year = NewDate.getFullYear();
         const month = NewDate.getMonth() + 1;
-        const day = NewDate.getDate();
-
-        
+        const day = NewDate.getDate();  
        
         const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         const Rates = await GetRates(formattedDate);
@@ -104,15 +102,13 @@ async function GetData(NumberOfDays, typeOfAsset)
     yValues = yValuesTemp.reverse();
     document.getElementById("LoadingMessage").innerHTML = null;
     createChart();
-    
-   
+       
     const today = new Date();
     const NewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1); // Day - 1 becouse API have errors sometimes when i call today date
     const year = NewDate.getFullYear();
     const month = NewDate.getMonth() + 1;
     const day = NewDate.getDate();
     const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-
   
     const NewDate2 = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1 - NumberOfDays) // Day - 1 becouse API have errors sometimes when i call today date
     const year2= NewDate2.getFullYear();
@@ -136,7 +132,6 @@ async function GetData(NumberOfDays, typeOfAsset)
     }
 
 }
-
 
 async function GetRates(date)
 {

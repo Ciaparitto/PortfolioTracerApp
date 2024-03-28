@@ -15,12 +15,12 @@ namespace PortfolioApp.Controllers
 	{
 		private readonly UserManager<UserModel> _UserManager;
 		private readonly SignInManager<UserModel> _SignInManager;
-		private readonly IDbService _DbService;
+		private readonly IDbHelper _DbService;
 		private readonly IUserService _UserService;
 		private readonly HttpClient HttpClient;
 		private readonly AppDbContext _Context;
 		private readonly IUserGetter _UserGetter;
-		public AccountController(IUserGetter UserGetter, HttpClient httpClient, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbService dbService, IUserService userService, AppDbContext context)
+		public AccountController(IUserGetter UserGetter, HttpClient httpClient, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbHelper dbService, IUserService userService, AppDbContext context)
 		{
 			_UserManager = userManager;
 			_SignInManager = signInManager;
@@ -39,8 +39,6 @@ namespace PortfolioApp.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Register(RegisterModel RegisterData)
 		{
-
-
 			if (ModelState.IsValid)
 			{
 				var NewUser = new UserModel
@@ -48,9 +46,22 @@ namespace PortfolioApp.Controllers
 					Email = RegisterData.EmailAdress,
 					UserName = RegisterData.UserName,
 				};
-				await _UserManager.CreateAsync(NewUser, RegisterData.Password);
-				await _SignInManager.PasswordSignInAsync(RegisterData.Password, RegisterData.Password, false, false);
-				return Redirect("https://localhost:7080/");
+				if (_Context.Users.Where(User => User.Email == RegisterData.EmailAdress).ToList().Count != 0)
+				{
+					ViewBag.Error = $"Email {RegisterData.EmailAdress} is already taken";
+					return View();
+				}
+				var Result = await _UserManager.CreateAsync(NewUser, RegisterData.Password);
+
+				if (Result.Succeeded)
+				{
+					await _SignInManager.PasswordSignInAsync(RegisterData.Password, RegisterData.Password, false, false);
+					return Redirect("/");
+				}
+				else
+				{
+					ViewBag.Error = Result.Errors.FirstOrDefault().Description;
+				}
 			}
 			return View(RegisterData);
 		}
@@ -64,8 +75,15 @@ namespace PortfolioApp.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				await _SignInManager.PasswordSignInAsync(LoginData.UserName, LoginData.Password, false, false);
-				return Redirect("/");
+				var Result = await _SignInManager.PasswordSignInAsync(LoginData.UserName, LoginData.Password, false, false);
+				if (Result.Succeeded)
+				{
+					return Redirect("/");
+				}
+				else
+				{
+					ViewBag.Error = "Username or password is wrong";
+				}
 			}
 			return View();
 		}
@@ -102,101 +120,6 @@ namespace PortfolioApp.Controllers
 			ViewBag.UserName = User.UserName;
 
 			return View();
-		}
-
-		public async Task<double> GetAmmountOfAsset(string AssetCode)
-		{
-			var User = await _UserGetter.GetLoggedUser();
-			if (User != null)
-			{
-
-				var AssetList = _Context.Assets.Where(x => x.AssetCode == AssetCode && x.UserId == User.Id).ToList();
-				double Ammount = 0;
-				foreach (var Asset in AssetList)
-				{
-					Ammount += Asset.Ammount;
-				}
-				return Ammount;
-			}
-			return 0;
-		}
-		public async Task<Dictionary<string, double>> GetUserAssets()
-		{
-
-			var User = await _UserGetter.GetLoggedUser();
-
-
-			var Dict = new Dictionary<string, double>();
-			if (User != null)
-			{
-
-				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id).ToList();
-				foreach (var Asset in AssetList)
-				{
-					if (!Dict.ContainsKey(Asset.AssetCode) || Dict[Asset.AssetCode] == null)
-					{
-						Dict[Asset.AssetCode] = Asset.Ammount;
-					}
-					else
-					{
-						if (Asset.TransactionType == "Deposit")
-						{
-							Dict[Asset.AssetCode] += Asset.Ammount;
-						}
-						else
-						{
-							Dict[Asset.AssetCode] -= Asset.Ammount;
-						}
-					}
-
-					if (Dict[Asset.AssetCode] <= 0)
-					{
-						Dict.Remove(Asset.AssetCode);
-					}
-
-				}
-			}
-
-			return Dict;
-
-
-		}
-		public async Task<Dictionary<string, double>> GetUserAssetsByType(string Type)
-		{
-
-			var User = await _UserGetter.GetLoggedUser();
-
-			var Dict = new Dictionary<string, double>();
-			if (User != null)
-			{
-				var AssetList = _Context.Transactions.Where(x => x.UserId == User.Id && x.TypeOfAsset == Type).ToList();
-
-				foreach (var Asset in AssetList)
-				{
-					if (!Dict.ContainsKey(Asset.AssetCode) || Dict[Asset.AssetCode] == null)
-					{
-						Dict[Asset.AssetCode] = Asset.Ammount;
-					}
-					else
-					{
-						if (Asset.TransactionType == "Deposit")
-						{
-							Dict[Asset.AssetCode] += Asset.Ammount;
-						}
-						else
-						{
-							Dict[Asset.AssetCode] -= Asset.Ammount;
-						}
-					}
-
-					if (Dict[Asset.AssetCode] <= 0)
-					{
-						Dict.Remove(Asset.AssetCode);
-					}
-				}
-			}
-			return Dict;
-
 		}
 		public async Task<bool> CheckPassword(string Password)
 		{

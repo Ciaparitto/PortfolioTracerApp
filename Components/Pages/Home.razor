@@ -5,7 +5,7 @@
 @using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
-@inject IDbService _DbService;
+@inject IDictGetter _DictGetter;
 @inject IUserService _UserService;
 @inject HttpClient httpclinet;
 @inject IAssetGetter _AssetGetter;
@@ -41,7 +41,6 @@
 	</div>
 <p id="AssetValueChange"></p>
 
-
 <script>
 	document.getElementById("weekButton").click();
 </script>
@@ -59,9 +58,9 @@
 	protected override async Task OnInitializedAsync()
 	{
 		LoggedUser = await _UserGetter.GetLoggedUser();
-		MetalDict = await _DbService.GetMetalDict();
-		CurrencyDict = await _DbService.GetCurrencyDict();
-		CryptoCurrencyDict = await _DbService.GetCryptoCurrencyDict();
+		MetalDict = await _DictGetter.GetMetalDict();
+		CurrencyDict = await _DictGetter.GetCurrencyDict();
+		CryptoCurrencyDict = await _DictGetter.GetCryptoCurrencyDict();
 
 		AllAssetsDict = CurrencyDict
 			.Concat(MetalDict)

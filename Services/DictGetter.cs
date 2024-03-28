@@ -1,27 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PortfolioApp.Components.Services.Interfaces;
-using PortfolioApp.Models;
-using PortfolioApp.Services.Interfaces;
+﻿using PortfolioApp.Services.Interfaces;
 
 namespace PortfolioApp.Services
 {
-	public class DbService : IDbService
+	public class DictGetter : IDictGetter
 	{
-		private readonly AppDbContext _Context;
-		private readonly IUserGetter _UserGetter;
-		public DbService(AppDbContext context, IUserGetter UsetGetter)
-		{
-			_Context = context;
-			_UserGetter = UsetGetter;
-
-		}
-		public async Task AddAssetToDb(AssetModel model)
-		{
-			await _Context.Assets.AddAsync(model);
-			await _Context.SaveChangesAsync();
-		}
-
 		public async Task<Dictionary<string, string>> GetMetalDict()
 		{
 			Dictionary<string, string> MetalsDict = new Dictionary<string, string>
@@ -97,12 +79,6 @@ namespace PortfolioApp.Services
 			{ "SNX", "Synthetix" },
 			};
 			return CryptoDict;
-		}
-		
-		public async Task AddTransactionToDb(TransactionModel model)
-		{
-			await _Context.Transactions.AddAsync(model);
-			await _Context.SaveChangesAsync();
 		}
 
 	}

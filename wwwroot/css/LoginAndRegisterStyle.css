@@ -23,6 +23,7 @@ button:hover {
     background-color: rgb(0,13,26);
  }
 .logincontainer {
+
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -31,27 +32,32 @@ button:hover {
     
 }
 .validation-summary-errors {
-    border-radius: 20px;
-    width: 20%;
-    padding: 5px;
-    background-color: rgba(0,13,26,0.3);
+    padding-right:40px;
+    padding-left: 0px;
     color: white;
-    font-weight: bold
+    font-weight: bold;
 }
+.validation-errors {
+    color: white;
+    font-weight: bold;
+}
+
 .Button-Redirect {
     color: white;
     text-decoration: none;
     padding: 15px;
     background-color: rgba(0,13,26,0.3);
     float: right;
-    margin:10px;
-    margin-right:50px;
-    border-radius:20px;
-   
+    margin: 10px;
+    margin-right: 50px;
+    border-radius: 20px;
 }
 .Button-Redirect:hover {
     background-color: rgb(0,13,26);
 }
 #RedirectDiv {
     height: 100px;
+}
+li{
+    list-style-type: none;
 }

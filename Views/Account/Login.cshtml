@@ -11,8 +11,14 @@
 	</div>
 @using (Html.BeginForm("Login", "Account", FormMethod.Post))
 {
-	@Html.ValidationSummary()
 	<div class="logincontainer">
+		@Html.ValidationSummary()
+			<div class="validation-errors">
+				@if (ViewBag.Error != null)
+				{
+					<p>@ViewBag.Error</p>
+				}
+			</div>
 		<p class="textarealogin">Username: <br />@Html.TextBoxFor(x => x.UserName)</p>
 		<p class="textarealogin">Password: <br />@Html.PasswordFor(x => x.Password)</p>
 		<p><button class="button" type="submit">Login In</button></p>

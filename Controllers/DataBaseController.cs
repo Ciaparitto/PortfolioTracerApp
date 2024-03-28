@@ -10,13 +10,11 @@ namespace PortfolioApp.Controllers
 {
 	public class DataBaseController : Controller
 	{
-		private readonly IUserService _UserService;
+
 		private readonly AppDbContext _Context;
 		private readonly IUserGetter _UserGetter;
-		public DataBaseController(IUserService userService, AppDbContext context,IUserGetter userGetter)
+		public DataBaseController(AppDbContext context,IUserGetter userGetter)
 		{
-
-			_UserService = userService;
 			_Context = context;
 			_UserGetter = userGetter;
 		}
@@ -73,14 +71,10 @@ namespace PortfolioApp.Controllers
 
 				}
 			}
-
 			return Dict;
-
-
 		}
 		public async Task<Dictionary<string, double>> GetUserAssetsByType(string Type)
 		{
-
 			var User = await _UserGetter.GetLoggedUser();
 
 			var Dict = new Dictionary<string, double>();
@@ -113,7 +107,6 @@ namespace PortfolioApp.Controllers
 				}
 			}
 			return Dict;
-
 		}
 	}
 }

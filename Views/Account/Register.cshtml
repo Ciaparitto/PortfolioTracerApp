@@ -12,6 +12,12 @@
 {
     <div class="logincontainer">
         @Html.ValidationSummary()
+            <div class="validation-errors">
+                @if (ViewBag.Error != null)
+                {
+                    <p>@ViewBag.Error</p>
+                }
+            </div>
         <p class="textarealogin">Username: <br> @Html.TextBoxFor(x => x.UserName)</p>
 
         <p class="textarealogin"> Email Adress:<br> @Html.TextBoxFor(x => x.EmailAdress)</p>

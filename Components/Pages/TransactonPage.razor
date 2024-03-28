@@ -3,8 +3,9 @@
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
 @rendermode InteractiveServer
-@inject IDbService _DbService
-@inject IUserService _userService;
+@inject IDictGetter _DictGetter;
+@inject IDbHelper _DbHelper;
+@inject IUserService _UserService;
 @inject IAssetGetter _AssetGetter
 @inject IUserGetter _UserGetter;
 @inject ITransactionGetter _TransactionGetter;
@@ -78,8 +79,6 @@
 					<td>@Transaction.Ammount</td>
 					<td>@Transaction.Id</td>
 			</tr>
-
-		
 		}
 		</table>
 	</div>
@@ -102,9 +101,9 @@
 		LoggedUser = await _UserGetter.GetLoggedUser();
 		Model.TransactionType = "Deposit";
 		TransactionsList = await _TransactionGetter.GetUserTransactions(false);
-		MetalDict = await _DbService.GetMetalDict();
-		CurrencyDict = await _DbService.GetCurrencyDict();
-		CryptoCurrencyDict = await _DbService.GetCryptoCurrencyDict();
+		MetalDict = await _DictGetter.GetMetalDict();
+		CurrencyDict = await _DictGetter.GetCurrencyDict();
+		CryptoCurrencyDict = await _DictGetter.GetCryptoCurrencyDict();
 
 		AllAssetsDict = CurrencyDict
 			.Concat(MetalDict)
@@ -128,7 +127,7 @@
 			{
 				Model.UserId = LoggedUser.Id;
 				Model.IsTrialTransaction = false;
-				await _DbService.AddTransactionToDb(Model);
+				await _DbHelper.AddTransactionToDb(Model);
 
 				ChangeMessage($"successfully {Model.TransactionType} {Dict[Model.AssetCode]} in number {Model.Ammount}");	
 			}

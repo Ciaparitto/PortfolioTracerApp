@@ -111,7 +111,7 @@ namespace PortfolioApp.Services
 			}
 			return 0;
 		}
-		public async Task<double> GetAssetsValue(string AssetCode, double Ammount, UserModel User)
+		public async Task<double> GetAssetValue(string AssetCode, double Ammount, UserModel User)
 		{
 			HttpResponseMessage Response = _HttpClient.GetAsync($"/Api/GetRatesLasted").Result;
 			if (Response.IsSuccessStatusCode)

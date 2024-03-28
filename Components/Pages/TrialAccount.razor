@@ -3,8 +3,9 @@
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
 @rendermode InteractiveServer
-@inject IDbService _DbService
-@inject IUserService _userService;
+@inject IDictGetter _DictGetter;
+@inject IDbHelper _DbHelper;
+@inject IUserService _UserService;
 @inject IAssetGetter _AssetGetter
 @inject IUserGetter _UserGetter;
 @inject AppDbContext _Context;
@@ -132,11 +133,11 @@
 
 		UserAssetList = await _AssetGetter.GetUserAssets(true);
 		TransactionsList = await _TransactionGetter.GetUserTransactions(true);
-		MetalDict = await _DbService.GetMetalDict();
+		MetalDict = await _DictGetter.GetMetalDict();
 
-		CurrencyDict = await _DbService.GetCurrencyDict();
+		CurrencyDict = await _DictGetter.GetCurrencyDict();
 
-		CryptoCurrencyDict = await _DbService.GetCryptoCurrencyDict();
+		CryptoCurrencyDict = await _DictGetter.GetCryptoCurrencyDict();
 
 		AllAssetsDict = CurrencyDict
 			.Concat(MetalDict)
@@ -152,7 +153,7 @@
 
 		if (!string.IsNullOrEmpty(TransactionModel.AssetCode) && !string.IsNullOrEmpty(TransactionModel.TransactionType) && TransactionModel.Ammount > 0)
 		{
-			var TransactionValue = await _AssetGetter.GetAssetsValue(TransactionModel.AssetCode, TransactionModel.Ammount, LoggedUser);
+			var TransactionValue = await _AssetGetter.GetAssetValue(TransactionModel.AssetCode, TransactionModel.Ammount, LoggedUser);
 
 			TransactionModel.UserId = LoggedUser.Id;
 			TransactionModel.IsTrialTransaction = true;
@@ -166,7 +167,7 @@
 				else
 				{
 					LoggedUser.Money += TransactionValue;
-					await _DbService.AddTransactionToDb(TransactionModel);
+					await _DbHelper.AddTransactionToDb(TransactionModel);
 
 					ChangeMessage($"successfully {TransactionModel.TransactionType} {DictTransactions[TransactionModel.AssetCode]} in number {TransactionModel.Ammount}");
 				}
@@ -174,7 +175,7 @@
 			if (TransactionModel.TransactionType == "Deposit" && LoggedUser.Money >= TransactionValue)
 			{
 				LoggedUser.Money -= TransactionValue;
-				await _DbService.AddTransactionToDb(TransactionModel);
+				await _DbHelper.AddTransactionToDb(TransactionModel);
 
 				ChangeMessage($"successfully {TransactionModel.TransactionType} {DictTransactions[TransactionModel.AssetCode]} in number {TransactionModel.Ammount}");	
 			}
