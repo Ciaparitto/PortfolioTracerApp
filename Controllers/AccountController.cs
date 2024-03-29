@@ -94,24 +94,6 @@ namespace PortfolioApp.Controllers
 			return Redirect("/");
 
 		}
-		[HttpPost]
-		public async Task<IActionResult> AddAsset(AssetModel AssetBody)
-		{
-
-			if (ModelState.IsValid)
-			{
-				var Model = new AssetModel
-				{
-					AssetCode = AssetBody.AssetCode,
-					Ammount = AssetBody.Ammount,
-					TypeOfAsset = AssetBody.TypeOfAsset,
-					UserId = _UserGetter.GetLoggedUser().Result.Id,
-				};
-				await _DbService.AddAssetToDb(Model);
-				return Redirect("/");
-			}
-			return View(AssetBody);
-		}
 		[HttpGet]
 		[Route("/YourAccount")]
 		public async Task<IActionResult> Account()

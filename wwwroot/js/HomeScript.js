@@ -33,9 +33,9 @@ async function CalcAssetValue(DateArg, typeOfAsset)
     let response;
 
     if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "") {
-        response = await fetch("/Account/GetUserAssets");
+        response = await fetch("/DataBase/GetUserAssets");
     } else {
-        response = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
+        response = await fetch(`/DataBase/GetUserAssetsByType?Type=${typeOfAsset}`);
     }
 
     const AssetDict = await response.json();
@@ -68,9 +68,9 @@ async function GetData(NumberOfDays, typeOfAsset)
 
     if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "")
     {
-        response = await fetch("/Account/GetUserAssets");
+        response = await fetch("/DataBase/GetUserAssets");
     } else {
-        response  = await fetch(`/Account/GetUserAssetsByType?Type=${typeOfAsset}`);
+        response = await fetch(`/DataBase/GetUserAssetsByType?Type=${typeOfAsset}`);
     }
     const AssetDict = await response.json();
    
@@ -83,7 +83,6 @@ async function GetData(NumberOfDays, typeOfAsset)
        
         const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         const Rates = await GetRates(formattedDate);
-        console.log(Rates);
         for (const period of Object.keys(AssetDict)) {
             let value = 0
             for (const [Key, AssetValue] of Object.entries(AssetDict)) {
@@ -120,15 +119,15 @@ async function GetData(NumberOfDays, typeOfAsset)
     const AssetValueChange = (AssetValue - AssetValue2).toFixed(2);
     if (AssetValueChange > 0)
     {
-        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} has increased by ${AssetValueChange}$`;
+        document.getElementById("AssetValueChange").innerHTML = `Your Assets has increased by ${AssetValueChange} in last ${NumberOfDays}`;
     }
     if (AssetValueChange < 0)
     {
-        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} has decreased by ${AssetValueChange}$`;
+        document.getElementById("AssetValueChange").innerHTML = `Your Assets has decreased by ${AssetValueChange} in last ${NumberOfDays}`;
     }
     if (AssetValueChange == 0)
     {
-        document.getElementById("AssetValueChange").innerHTML = `Your Assets in category ${typeOfAsset} didnt change value`;
+        document.getElementById("AssetValueChange").innerHTML = `Your Assets didnt change value in last ${NumberOfDays}`;
     }
 
 }
