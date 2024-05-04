@@ -2,11 +2,9 @@
 @rendermode InteractiveServer
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
-@using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
 @using PortfolioApp.Services
 @using PortfolioApp.Services.Interfaces
-@inject IUserService _UserService;
 @inject IAssetGetter _AssetService;
 @inject IUserGetter _UserGetter;
 <PageTitle>Your Assets</PageTitle>
@@ -17,7 +15,7 @@
 <div id="UserAssets">
 <div id="AssetSelect">
 	<p>
-		Choose type <InputSelect @bind-Value="model.TypeOfAsset" @oninput="UpdateSelectedType">
+		Choose type <InputSelect @bind-Value="TransactionModel.TypeOfAsset" @oninput="UpdateSelectedType">
 			<option class="option" value="All">All</option>
 			<option class="option" value="Metal">Metal</option>
 			<option class="option" value="Currency">Currency</option>
@@ -40,7 +38,7 @@
 	public UserModel LoggedUser;
 	private Dictionary<string, double> UserAssetList;
 	public string selectedType = string.Empty;
-	public AssetModel model = new AssetModel();
+	public TransactionModel TransactionModel = new TransactionModel();
 	protected override async Task OnInitializedAsync()
 	{
 		LoggedUser = await _UserGetter.GetLoggedUser();

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 using PortfolioApp.Services.Interfaces;
 using System.Configuration;

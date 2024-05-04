@@ -1,11 +1,9 @@
 ﻿@page "/YourTransactions"
-@using PortfolioApp.Components.Services.Interfaces
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
 @rendermode InteractiveServer
 @inject IDictGetter _DictGetter;
 @inject IDbHelper _DbHelper;
-@inject IUserService _UserService;
 @inject IAssetGetter _AssetGetter
 @inject IUserGetter _UserGetter;
 @inject ITransactionGetter _TransactionGetter;

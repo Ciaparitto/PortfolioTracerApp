@@ -1,11 +1,10 @@
 ﻿@page "/TrialAccount"
-@using PortfolioApp.Components.Services.Interfaces
+
 @using PortfolioApp.Models
 @using PortfolioApp.Services.Interfaces
 @rendermode InteractiveServer
 @inject IDictGetter _DictGetter;
 @inject IDbHelper _DbHelper;
-@inject IUserService _UserService;
 @inject IAssetGetter _AssetGetter
 @inject IUserGetter _UserGetter;
 @inject AppDbContext _Context;
@@ -65,7 +64,7 @@
 <div id="UserAssets">
 	<div id="AssetSelect">
 		<p>
-			Choose type <InputSelect @bind-Value="AssetModel.TypeOfAsset" @oninput="UpdateSelectedTypeAssets">
+			Choose type <InputSelect @bind-Value="TransactionModel.TypeOfAsset" @oninput="UpdateSelectedTypeAssets">
 				<option class="option" value="All">All</option>
 				<option class="option" value="Metal">Metal</option>
 				<option class="option" value="Currency">Currency</option>
@@ -123,7 +122,6 @@
 	private string SelectedTypeTransaction = string.Empty;
 	private string SelectedTypeAsset = string.Empty;
 	private TransactionModel TransactionModel = new TransactionModel();
-	private AssetModel AssetModel = new AssetModel();
 	private List<TransactionModel> TransactionsList;
 	private Dictionary<string, double> UserAssetList;
 	protected override async Task OnInitializedAsync()

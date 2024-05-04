@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Model;
 using Microsoft.EntityFrameworkCore;
-using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 using PortfolioApp.Services;
 using PortfolioApp.Services.Interfaces;
@@ -16,16 +15,14 @@ namespace PortfolioApp.Controllers
 		private readonly UserManager<UserModel> _UserManager;
 		private readonly SignInManager<UserModel> _SignInManager;
 		private readonly IDbHelper _DbService;
-		private readonly IUserService _UserService;
 		private readonly HttpClient HttpClient;
 		private readonly AppDbContext _Context;
 		private readonly IUserGetter _UserGetter;
-		public AccountController(IUserGetter UserGetter, HttpClient httpClient, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbHelper dbService, IUserService userService, AppDbContext context)
+		public AccountController(IUserGetter UserGetter, HttpClient httpClient, UserManager<UserModel> userManager, SignInManager<UserModel> signInManager, IDbHelper dbService, AppDbContext context)
 		{
 			_UserManager = userManager;
 			_SignInManager = signInManager;
 			_DbService = dbService;
-			_UserService = userService;
 			this.HttpClient = httpClient;
 			_Context = context;
 			_UserGetter = UserGetter;

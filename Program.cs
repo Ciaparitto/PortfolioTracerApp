@@ -1,6 +1,4 @@
 using PortfolioApp.Components;
-using PortfolioApp.Components.Services;
-using PortfolioApp.Components.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using PortfolioApp.Models;
 using System;
@@ -25,7 +23,6 @@ builder.Services.AddAntiforgery(o => o.HeaderName = "X-CSRF-TOKEN");
 builder.Services.AddRazorComponents()
 	.AddInteractiveServerComponents();
 
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDbHelper, DbHelper>();
 builder.Services.AddScoped<IAssetGetter, AssetGetter>();
 builder.Services.AddScoped<IUserGetter, UserGetter>();

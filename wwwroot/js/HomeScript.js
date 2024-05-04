@@ -33,9 +33,9 @@ async function CalcAssetValue(DateArg, typeOfAsset)
     let response;
 
     if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "") {
-        response = await fetch("/DataBase/GetUserAssets");
+        response = await fetch("/Asset/GetUserAssets");
     } else {
-        response = await fetch(`/DataBase/GetUserAssetsByType?Type=${typeOfAsset}`);
+        response = await fetch(`/Asset/GetUserAssetsByType?Type=${typeOfAsset}`);
     }
 
     const AssetDict = await response.json();
@@ -68,9 +68,9 @@ async function GetData(NumberOfDays, typeOfAsset)
 
     if (typeOfAsset === null || typeOfAsset === "All" || typeOfAsset === "")
     {
-        response = await fetch("/DataBase/GetUserAssets");
+        response = await fetch("/Asset/GetUserAssets");
     } else {
-        response = await fetch(`/DataBase/GetUserAssetsByType?Type=${typeOfAsset}`);
+        response = await fetch(`/Asset/GetUserAssetsByType?Type=${typeOfAsset}`);
     }
     const AssetDict = await response.json();
    

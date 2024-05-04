@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 using PortfolioApp.Services.Interfaces;
 using System.Net.Http;
@@ -11,13 +10,11 @@ namespace PortfolioApp.Services
 {
 	public class AssetGetter : IAssetGetter
 	{
-		private readonly IUserService _UserService;
 		private readonly AppDbContext _Context;
 		private readonly IUserGetter _UserGetter;
 		private readonly HttpClient _HttpClient;
-		public AssetGetter(IUserService UserService, AppDbContext Context, IUserGetter userGetter, HttpClient httpClient)
-		{
-			_UserService = UserService;
+		public AssetGetter(AppDbContext Context, IUserGetter userGetter, HttpClient httpClient)
+		{			
 			_Context = Context;
 			_UserGetter = userGetter;
 			_HttpClient = httpClient;

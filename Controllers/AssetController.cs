@@ -1,40 +1,23 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PortfolioApp.Components.Services.Interfaces;
 using PortfolioApp.Models;
 using PortfolioApp.Services;
 using PortfolioApp.Services.Interfaces;
 
 namespace PortfolioApp.Controllers
 {
-	public class DataBaseController : Controller
+	public class AssetController : Controller
 	{
 
 		private readonly AppDbContext _Context;
 		private readonly IUserGetter _UserGetter;
-		public DataBaseController(AppDbContext context,IUserGetter userGetter)
+		public AssetController(AppDbContext context,IUserGetter userGetter)
 		{
 			_Context = context;
 			_UserGetter = userGetter;
 		}
 
-		public async Task<double> GetAmmountOfAsset(string AssetCode)
-		{
-			var User = await _UserGetter.GetLoggedUser();
-			if (User != null)
-			{
-
-				var AssetList = _Context.Assets.Where(x => x.AssetCode == AssetCode && x.UserId == User.Id).ToList();
-				double Ammount = 0;
-				foreach (var Asset in AssetList)
-				{
-					Ammount += Asset.Ammount;
-				}
-				return Ammount;
-			}
-			return 0;
-		}
 		public async Task<Dictionary<string, double>> GetUserAssets()
 		{
 

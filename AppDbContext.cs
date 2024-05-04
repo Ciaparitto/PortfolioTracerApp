@@ -11,7 +11,6 @@ namespace PortfolioApp
 		{
 
 		}
-		public DbSet<AssetModel> Assets { get; set; }
 		public DbSet<TransactionModel> Transactions { get; set; }
 
 
